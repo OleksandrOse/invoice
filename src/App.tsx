@@ -20,7 +20,6 @@ const App: React.FC = () => {
   } = useInvoiceForm();
 
   const handlePrint = () => { printInvoice(form, totals); };
-
   return (
     <div className="app">
       <div className="formPanel">
