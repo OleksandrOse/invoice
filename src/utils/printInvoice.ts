@@ -292,7 +292,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
 
   const pw = window.open('', '_blank', 'width=900,height=750');
   if (!pw) {
-    alert('Дозволь спливаючі вікна для цього сайту в браузері!');
+    alert('Erlauben Sie Pop-ups für diese Website in Ihrem Browser!');
     return;
   }
   pw.document.write(html);
