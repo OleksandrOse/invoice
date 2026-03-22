@@ -1,26 +1,61 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useInvoiceForm } from './hooks/useinvoiceform';
+import { SenderForm } from './components/SenderForm';
+import { RecipientForm } from './components/RecipientForm';
+import { InvoiceMetaForm } from './components/InvoiceMetaForm';
+import { TouristTaxForm } from './components/TouristTaxForm';
+import { ExtraItemsForm } from './components/ExtraltemsForm';
+import { DiscountForm } from './components/DiscountForm';
+import { InvoicePreview } from './components/InvoicePreview';
+import { printInvoice } from './utils/printInvoice';
+import './styles/App.scss';
+import './styles/global.scss';
 
-function App() {
+const App: React.FC = () => {
+  const {
+    form, totals,
+    setSender, setRecipient, setRecipientType,
+    setMeta, setTouristTax, setDiscount,
+    addItem, removeItem, updateItem,
+  } = useInvoiceForm();
+
+  const handlePrint = () => printInvoice(form, totals);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <div className="formPanel">
+        <div className="panelTitle">Kontogenerator</div>
+        <SenderForm sender={form.sender} onChange={setSender} />
+        <RecipientForm
+          recipient={form.recipient}
+          onChange={setRecipient}
+          onTypeChange={setRecipientType}
+        />
+        <InvoiceMetaForm meta={form.meta} onChange={setMeta} />
+        <TouristTaxForm
+          touristTax={form.touristTax}
+          total={totals.touristTaxTotal}
+          onChange={setTouristTax}
+        />
+        <ExtraItemsForm
+          items={form.extraItems}
+          onAdd={addItem}
+          onRemove={removeItem}
+          onUpdate={updateItem}
+        />
+        <DiscountForm discount={form.discount} onChange={setDiscount} />
+      </div>
+
+      <div className="previewPanel">
+        <div className="invoiceWrapper">
+          <InvoicePreview form={form} totals={totals} />
+          <button className="printBtn" onClick={handlePrint}>
+            PDF drucken / speichern
+          </button>
+        </div>
+      </div>
     </div>
   );
-}
+};
 
 export default App;

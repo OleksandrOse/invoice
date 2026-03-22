@@ -1,0 +1,21 @@
+@use './variables' as *;
+
+.section {
+  margin-bottom: 1.8rem;
+}
+
+.sectionLabel {
+  @include section-label;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.row3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.75rem;
+}

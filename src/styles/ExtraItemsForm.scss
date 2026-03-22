@@ -1,0 +1,42 @@
+@use './variables' as *;
+
+.itemRow {
+  display: grid;
+  grid-template-columns: 3fr 1fr 1.2fr auto;
+  gap: 6px;
+  align-items: end;
+  margin-bottom: 6px;
+}
+
+.removeBtn {
+  background: transparent;
+  border: none;
+  color: $text-ghost;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0 4px;
+  margin-top: 20px;
+  transition: color 0.2s;
+
+  &:hover { color: #e07070; }
+}
+
+.addBtn {
+  width: 100%;
+  background: transparent;
+  border: 1px dashed $bg-border;
+  border-radius: $radius-md;
+  color: $text-faint;
+  font-family: $font-body;
+  font-size: 12px;
+  padding: 8px;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: border-color 0.2s, color 0.2s;
+
+  &:hover {
+    border-color: $gold;
+    color: $gold;
+  }
+}

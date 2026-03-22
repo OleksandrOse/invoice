@@ -1,0 +1,28 @@
+@use './variables' as *;
+
+.typeToggle {
+  display: flex;
+  border: 1px solid $bg-border;
+  border-radius: $radius-md;
+  overflow: hidden;
+
+  button {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: $text-faint;
+    font-family: $font-body;
+    font-size: 12px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+
+    &:hover:not(.active) { background: rgba($gold, 0.08); color: $text-muted; }
+
+    &.active {
+      background: $gold;
+      color: $bg-deep;
+      font-weight: 500;
+    }
+  }
+}

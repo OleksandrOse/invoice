@@ -1,0 +1,27 @@
+@use 'variables' as *;
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: $font-body;
+  background: $bg-deep;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+label {
+  display: block;
+  font-size: 11px;
+  color: $text-muted;
+  margin-bottom: 4px;
+  margin-top: 0.6rem;
+}
+
+input, select { @include form-field; }
+
+@media print {
+  .form-panel, .print-btn { display: none !important; }
+  .preview-panel { max-height: none !important; padding: 0 !important; background: white !important; }
+  .invoice-wrapper { max-width: 100% !important; }
+}

@@ -1,0 +1,65 @@
+@use './fonts' as *;
+// ─── Palette ─────────────────────────────────────────────────────────────────
+$bg-deep:        #0d1117;
+$bg-card:        #141b24;
+$bg-border:      #1e2a38;
+$bg-border-soft: #1e2530;
+
+$gold:           #c9a96e;
+$gold-light:     #dfc08a;
+
+$text-primary:   #e8e0d0;
+$text-secondary: #c9d1dc;
+$text-muted:     #6b7a8d;
+$text-faint:     #556070;
+$text-ghost:     #3a4554;
+
+// Invoice doc colours
+$inv-navy:       #1a2540;
+$inv-cream:      #f5f0e8;
+$inv-paper:      #ffffff;
+$inv-divider:    #e8e0d0;
+$inv-row:        #f0ebe0;
+$inv-bank-bg:    #f8f4ee;
+
+// ─── Typography ──────────────────────────────────────────────────────────────
+$font-display:   'Playfair Display', serif;
+$font-body:      'DM Sans', sans-serif;
+$font-logo:      'Brush';
+$font-subtitle:   'Gothic';
+// ─── Spacing ─────────────────────────────────────────────────────────────────
+$radius-sm:  4px;
+$radius-md:  6px;
+$radius-lg:  8px;
+
+// ─── Mixins ──────────────────────────────────────────────────────────────────
+@mixin label-caps {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: $text-faint;
+}
+
+@mixin form-field {
+  width: 100%;
+  background: $bg-card;
+  border: 1px solid $bg-border;
+  border-radius: $radius-md;
+  color: $text-secondary;
+  font-family: $font-body;
+  font-size: 13px;
+  padding: 8px 12px;
+  outline: none;
+  transition: border-color 0.2s;
+
+  &::placeholder { color: $text-ghost; }
+  &:focus { border-color: $gold; }
+  option { background: $bg-card; }
+}
+
+@mixin section-label {
+  @include label-caps;
+  margin-bottom: 0.75rem;
+  display: block;
+}
