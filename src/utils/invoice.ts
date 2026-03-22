@@ -38,7 +38,7 @@ export const generateId = (): string =>
 export const defaultFormData = (): InvoiceFormData => ({
   sender: {
     name: 'Dr. Elena Schollenberg',
-    company: 'Wilena Apartments',
+    company: 'Wilena apartments',
     address: 'Warmbader Allee 53, 172/166',
     city: '9504 Villach',
     email: 'wilena@speed.at',

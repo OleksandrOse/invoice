@@ -1,8 +1,28 @@
 import { InvoiceFormData, InvoiceTotals } from '../types/invoice';
 import { fmt, formatDate } from './invoice';
 
-export const printInvoice = (form: InvoiceFormData, totals: InvoiceTotals): void => {
+const fontToBase64 = async (url: string): Promise<string> => {
+  const res = await fetch(url);
+  const arrayBuffer = await res.arrayBuffer();
+  const bytes = new Uint8Array(arrayBuffer);
+  let binary = '';
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  const base64 = btoa(binary);
+  const mime = url.endsWith('.otf') ? 'font/otf' : 'font/ttf';
+  return `data:${mime};base64,${base64}`;
+};
+
+export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals): Promise<void> => {
   const { sender, recipient, meta, touristTax, extraItems, discount } = form;
+
+  const origin = window.location.origin;
+
+  const [brushBase64, gothicBase64] = await Promise.all([
+    fontToBase64(`${origin}/invoice/fonts/Brush/BrushScriptOpti-Regular.otf`),
+    fontToBase64(`${origin}/invoice/fonts/Gothic/SpecialGothic-Regular.ttf`),
+  ]);
 
   const recipientName =
     recipient.type === 'company'
@@ -49,8 +69,6 @@ export const printInvoice = (form: InvoiceFormData, totals: InvoiceTotals): void
        <div class="s-line red"><span>Rabatt (-${discount}%)</span><span>-${fmt(totals.discountVal)}</span></div>`
     : '';
 
-  const origin = window.location.origin;
-
   const html = `<!DOCTYPE html>
 <html lang="de">
 <head>
@@ -60,13 +78,13 @@ export const printInvoice = (form: InvoiceFormData, totals: InvoiceTotals): void
 <style>
   @font-face {
     font-family: 'Brush';
-    src: url('${origin}/fonts/Brush/BrushScriptOpti-Regular.otf') format('opentype');
+    src: url('${brushBase64}') format('opentype');
     font-weight: normal;
     font-style: normal;
   }
   @font-face {
     font-family: 'Gothic';
-    src: url('${origin}/fonts/Gothic/SpecialGothic-Regular.ttf') format('truetype');
+    src: url('${gothicBase64}') format('truetype');
     font-weight: normal;
     font-style: normal;
   }
@@ -86,8 +104,6 @@ export const printInvoice = (form: InvoiceFormData, totals: InvoiceTotals): void
     flex-direction:column;
     background:#fff;
   }
-
-  /* ── HEADER ── */
   .hdr{
     background:#1e2d45;
     padding:2.2rem 2.8rem;
@@ -119,7 +135,6 @@ export const printInvoice = (form: InvoiceFormData, totals: InvoiceTotals): void
     letter-spacing:.05em;
     margin-top:2px;
   }
-
   .hdr-right{text-align:right;}
   .inv-title{
     font-family:'Playfair Display',serif;
@@ -132,18 +147,13 @@ export const printInvoice = (form: InvoiceFormData, totals: InvoiceTotals): void
     color:rgba(255,255,255,.55);
     margin-top:10px;line-height:2;
   }
-
-  /* ── BODY ── */
   .body{padding:2.2rem 2.8rem;flex:1;}
-
   .info-row{
     display:grid;grid-template-columns:1fr 1fr;
     gap:2.5rem;margin-bottom:2.2rem;
   }
   .info-lbl{font-size:12px;font-weight:700;color:#1e2d45;margin-bottom:5px;}
   .info-val{font-size:13px;color:#444;line-height:1.75;}
-
-  /* Table */
   table{width:100%;border-collapse:collapse;}
   thead tr{border-bottom:2px solid #1e2d45;}
   th{
@@ -158,8 +168,6 @@ export const printInvoice = (form: InvoiceFormData, totals: InvoiceTotals): void
   td.c{text-align:center;}
   td.r{text-align:right;}
   .empty{text-align:center!important;color:#bbb;font-style:italic;padding:1.8rem 0!important;}
-
-  /* Summary */
   .summary{
     display:flex;justify-content:flex-end;
     margin-top:1.8rem;
@@ -177,8 +185,6 @@ export const printInvoice = (form: InvoiceFormData, totals: InvoiceTotals): void
     border-top:2px solid #1e2d45;
     padding-top:9px;margin-top:5px;
   }
-
-  /* ── FOOTER ── */
   .ftr{
     background:#1e2d45;
     padding:1rem 2.8rem;
@@ -198,7 +204,6 @@ export const printInvoice = (form: InvoiceFormData, totals: InvoiceTotals): void
     font-size:9px;color:rgba(255,255,255,.55);
     flex-shrink:0;
   }
-
   @media print{
     @page{margin:0;size:A4 portrait;}
     body{margin:0;}
@@ -208,7 +213,6 @@ export const printInvoice = (form: InvoiceFormData, totals: InvoiceTotals): void
 </head>
 <body>
 <div class="page">
-
   <div class="hdr">
     <div class="logo">
       <div class="logo-title">${(sender.company || 'Wilena').split(' ')[0]}</div>
@@ -223,7 +227,6 @@ export const printInvoice = (form: InvoiceFormData, totals: InvoiceTotals): void
       </div>
     </div>
   </div>
-
   <div class="body">
     <div class="info-row">
       <div>
@@ -244,7 +247,6 @@ export const printInvoice = (form: InvoiceFormData, totals: InvoiceTotals): void
         </div>
       </div>
     </div>
-
     <table>
       <thead>
         <tr>
@@ -261,7 +263,6 @@ export const printInvoice = (form: InvoiceFormData, totals: InvoiceTotals): void
         ${emptyRow}
       </tbody>
     </table>
-
     <div class="summary">
       <div class="summary-inner">
         ${summaryRows}
@@ -272,27 +273,18 @@ export const printInvoice = (form: InvoiceFormData, totals: InvoiceTotals): void
       </div>
     </div>
   </div>
-
   <div class="ftr">
-    <div class="ftr-item">
-      <div class="ftr-icon">☎</div>
-      <span>${sender.email}</span>
-    </div>
-    <div class="ftr-item">
-      <div class="ftr-icon">✉</div>
-      <span>${sender.email}</span>
-    </div>
-    <div class="ftr-item">
-      <div class="ftr-icon">⌂</div>
-      <span>${sender.address}, ${sender.city}</span>
-    </div>
+    <div class="ftr-item"><div class="ftr-icon">☎</div><span>${sender.email}</span></div>
+    <div class="ftr-item"><div class="ftr-icon">✉</div><span>${sender.email}</span></div>
+    <div class="ftr-item"><div class="ftr-icon">⌂</div><span>${sender.address}, ${sender.city}</span></div>
   </div>
-
 </div>
 <script>
   window.onload = function() {
-    window.print();
-    window.onafterprint = function() { window.close(); };
+    document.fonts.ready.then(function() {
+      window.print();
+      window.onafterprint = function() { window.close(); };
+    });
   };
 </script>
 </body>

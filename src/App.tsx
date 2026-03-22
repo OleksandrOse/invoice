@@ -19,7 +19,7 @@ const App: React.FC = () => {
     addItem, removeItem, updateItem,
   } = useInvoiceForm();
 
-  const handlePrint = () => printInvoice(form, totals);
+  const handlePrint = () => { printInvoice(form, totals); };
 
   return (
     <div className="app">
