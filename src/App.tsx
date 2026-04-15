@@ -22,8 +22,8 @@ const App: React.FC = () => {
   const handlePrint = () => { printInvoice(form, totals); };
   return (
     <div className="app">
-      <div className="formPanel">
-        <div className="panelTitle">Kontogenerator</div>
+      <div className="form-panel">
+        <div className="panel-title">Kontogenerator</div>
         <SenderForm sender={form.sender} onChange={setSender} />
         <RecipientForm
           recipient={form.recipient}
@@ -45,10 +45,10 @@ const App: React.FC = () => {
         <DiscountForm discount={form.discount} onChange={setDiscount} />
       </div>
 
-      <div className="previewPanel">
-        <div className="invoiceWrapper">
+      <div className="preview-panel">
+        <div className="invoice-wrapper">
           <InvoicePreview form={form} totals={totals} />
-          <button className="printBtn" onClick={handlePrint}>
+          <button className="print-btn" onClick={handlePrint}>
             PDF drucken / speichern
           </button>
         </div>

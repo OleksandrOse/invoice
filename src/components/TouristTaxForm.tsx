@@ -11,9 +11,15 @@ interface Props {
 }
 
 export const TouristTaxForm: React.FC<Props> = ({ touristTax, total, onChange }) => (
-  <FormSection label="Kurtaxe">
-    <div className="row3">
+  <FormSection label="Übernachtungspreis inkl. Kurtaxe">
+     <div className="row">
       <div>
+        <label>Price</label>
+        <input
+          type="number"
+          value={touristTax.price} onChange={e => onChange({ price: e.target.value })} />
+      </div>
+        <div>
         <label>Nacht</label>
         <input
           type="number"
@@ -23,6 +29,8 @@ export const TouristTaxForm: React.FC<Props> = ({ touristTax, total, onChange })
           placeholder="9"
         />
       </div>
+    </div>
+    <div className="row">
       <div>
         <label>Person</label>
         <input

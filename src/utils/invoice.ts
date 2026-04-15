@@ -17,19 +17,23 @@ export const calcTotals = (data: InvoiceFormData): InvoiceTotals => {
     parseFloat(touristTax.persons || '0') *
     parseFloat(touristTax.pricePerNight || '0');
 
+  const ubernachtungTotal =
+    parseFloat(touristTax.nights || '0') *
+    parseFloat(touristTax.price || '0');
+
   const extraTotal = extraItems.reduce(
     (sum, item) =>
       sum + parseFloat(item.qty || '0') * parseFloat(item.price || '0'),
     0
   );
 
-  const subtotal = touristTaxTotal + extraTotal;
+  const subtotal = touristTaxTotal + extraTotal + ubernachtungTotal;
   const discountVal = discount
     ? (subtotal * parseFloat(discount)) / 100
     : 0;
   const total = subtotal - discountVal;
 
-  return { touristTaxTotal, extraTotal, subtotal, discountVal, total };
+  return { ubernachtungTotal, touristTaxTotal, extraTotal, subtotal, discountVal, total };
 };
 
 export const generateId = (): string =>
@@ -42,6 +46,7 @@ export const defaultFormData = (): InvoiceFormData => ({
     address: 'Warmbader Allee 53, 172/166',
     city: '9504 Villach',
     email: 'wilena@speed.at',
+    phone: '+43 664 73784888',
     bank: 'Hypo Salzburg',
     iban: 'AT573400064704493128',
     bic: 'RZ00AT2L',
@@ -51,6 +56,7 @@ export const defaultFormData = (): InvoiceFormData => ({
     name: '',
     company: '',
     address: '',
+    city: '',
   },
   meta: {
     invoiceNo: '001',
@@ -60,6 +66,7 @@ export const defaultFormData = (): InvoiceFormData => ({
     nights: '',
     persons: '',
     pricePerNight: '2.70',
+    price: '100',
   },
   extraItems: [],
   discount: '',

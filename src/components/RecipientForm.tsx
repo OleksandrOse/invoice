@@ -44,7 +44,15 @@ export const RecipientForm: React.FC<Props> = ({ recipient, onChange, onTypeChan
       </>
     )}
 
-    <label>Adresse</label>
-    <input value={recipient.address} onChange={e => onChange({ address: e.target.value })} />
+    <div className="row">
+      <div>
+        <label>Adresse</label>
+        <input value={recipient.address} onChange={e => onChange({ address: e.target.value })} />
+      </div>
+      <div>
+        <label>Stadt / Postleitzahl</label>
+        <input value={recipient.city} onChange={e => onChange({ city: e.target.value })} />
+      </div>
+    </div>
   </FormSection>
 );

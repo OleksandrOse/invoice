@@ -20,7 +20,7 @@ const InvoiceHeader: React.FC<HeaderProps> = ({ sender, meta }) => (
     <div className="titleArea">
       <div className="title">Rechnung</div>
       <div className="meta">
-        Nr. {meta.invoiceNo}<br />
+        Rechnungsnummer: {meta.invoiceNo}<br />
         Datum: {formatDate(meta.date)}<br />
         {sender.email}
       </div>
@@ -57,7 +57,8 @@ const InvoiceAddresses: React.FC<AddressesProps> = ({ sender, recipient }) => {
           {recipient.type === 'person' && recipient.company && (
             <>{recipient.company}<br /></>
           )}
-          {recipient.address}
+          {recipient.address && <>{recipient.address}<br /></>}
+          {recipient.city}
         </div>
       </div>
     </div>
@@ -67,9 +68,10 @@ const InvoiceAddresses: React.FC<AddressesProps> = ({ sender, recipient }) => {
 interface TableProps {
   form: InvoiceFormData;
   touristTaxTotal: number;
+  ubernachtungTotal: number;
 }
 
-const InvoiceTable: React.FC<TableProps> = ({ form, touristTaxTotal }) => {
+const InvoiceTable: React.FC<TableProps> = ({ form, touristTaxTotal, ubernachtungTotal }) => {
   const { touristTax, extraItems } = form;
   const hasTax = !!(touristTax.nights && touristTax.persons);
   let pos = 0;
@@ -88,16 +90,28 @@ const InvoiceTable: React.FC<TableProps> = ({ form, touristTaxTotal }) => {
       </thead>
       <tbody>
         {hasTax && (
-          <tr>
-            <td className="num">{++pos}</td>
-            <td>Tourist Tax {touristTax.persons} Persons</td>
-            <td className="num">{touristTax.nights}</td>
-            <td>Nacht/Pers.</td>
-            <td className="num">
-              {parseFloat(touristTax.pricePerNight || '0').toFixed(2)}
-            </td>
-            <td className="num">{fmt(touristTaxTotal)}</td>
-          </tr>
+          <>
+            <tr>
+              <td className="num">{++pos}</td>
+              <td>Ubernachtung</td>
+              <td className="num">{touristTax.nights}</td>
+              <td>Nacht</td>
+              <td className="num">
+                {parseFloat(touristTax.price || '0').toFixed(2)}
+              </td>
+              <td className="num">{fmt(ubernachtungTotal)}</td>
+            </tr>
+            <tr>
+              <td className="num">{++pos}</td>
+              <td>Tourist Tax {touristTax.persons} Persons</td>
+              <td className="num">{touristTax.nights}</td>
+              <td>Nacht/Pers.</td>
+              <td className="num">
+                {parseFloat(touristTax.pricePerNight || '0').toFixed(2)}
+              </td>
+              <td className="num">{fmt(touristTaxTotal)}</td>
+            </tr>
+          </>
         )}
         {extraItems
           .filter(i => i.name)
@@ -151,12 +165,28 @@ const InvoiceTotalsBlock: React.FC<TotalsProps> = ({ totals, discount }) => (
           </div>
         </>
       )}
-      <div className={`$totalRow} $final}`}>
+      <div className={`totalRow final`}>
         <span>Gesamt</span>
         <span>{fmt(totals.total)}</span>
       </div>
     </div>
   </div>
+);
+
+interface BankInfoProps {
+  sender: SenderInfo;
+}
+
+const InvoiceBankInfo: React.FC<BankInfoProps> = ({ sender }) => (
+
+  <div className="bank">
+    <strong>{sender.company}</strong><br />
+    <strong>{sender.name}</strong><br />
+    {sender.bank}<br />
+    IBAN: {sender.iban}<br />
+    BIC: {sender.bic}
+  </div>
+
 );
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
@@ -166,24 +196,22 @@ interface FooterProps {
 }
 
 const InvoiceFooter: React.FC<FooterProps> = ({ sender }) => (
-  <>
-    <div className="bank">
-      <strong>{sender.company} · {sender.name}</strong><br />
-      {sender.bank}<br />
-      IBAN: {sender.iban}<br />
-      BIC: {sender.bic}
+
+  <div className="footer">
+    <div className="footerItem">
+      <span className="dot" />
+      {sender.phone}
     </div>
-    <div className="footer">
-      <div className="footerItem">
-        <span className="dot" />
-        {sender.email}
-      </div>
-      <div className="footerItem">
-        <span className="dot" />
-        {sender.address}, {sender.city}
-      </div>
+    <div className="footerItem">
+      <span className="dot" />
+      {sender.email}
     </div>
-  </>
+    <div className="footerItem">
+      <span className="dot" />
+      {sender.address}, {sender.city}
+    </div>
+  </div>
+
 );
 
 // ─── InvoicePreview (export) ──────────────────────────────────────────────────
@@ -199,9 +227,10 @@ export const InvoicePreview: React.FC<Props> = ({ form, totals }) => (
     <div className="body">
       <InvoiceAddresses sender={form.sender} recipient={form.recipient} />
       <div className="divider" />
-      <InvoiceTable form={form} touristTaxTotal={totals.touristTaxTotal} />
+      <InvoiceTable form={form} touristTaxTotal={totals.touristTaxTotal} ubernachtungTotal={totals.ubernachtungTotal} />
       <InvoiceTotalsBlock totals={totals} discount={form.discount} />
-      <InvoiceFooter sender={form.sender} />
+      <InvoiceBankInfo sender={form.sender} />
     </div>
+    <InvoiceFooter sender={form.sender} />
   </div>
 );

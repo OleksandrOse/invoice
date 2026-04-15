@@ -18,7 +18,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
   const { sender, recipient, meta, touristTax, extraItems, discount } = form;
 
   const origin = window.location.origin;
-
+  let pos = 0;
   const [brushBase64, gothicBase64] = await Promise.all([
     fontToBase64(`${origin}/invoice/fonts/Brush/BrushScriptOpti-Regular.otf`),
     fontToBase64(`${origin}/invoice/fonts/Gothic/SpecialGothic-Regular.ttf`),
@@ -38,7 +38,16 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
 
   const taxRow = hasTax
     ? `<tr>
-        <td>${touristTax.nights} × Tourist Tax (${touristTax.persons} Pers.)</td>
+        <td class="l">${++pos}</td>
+        <td class="l">Ubernachtung</td>
+        <td class="c">${touristTax.nights}</td>
+        <td class="c">Nacht</td>
+        <td class="r">${parseFloat(touristTax.price || '0').toFixed(2)} €</td>
+        <td class="r">${fmt(totals.ubernachtungTotal)}</td>
+      </tr>
+      <tr>
+        <td class="l">${++pos}</td>
+        <td class="l">Tourist Tax (${touristTax.persons} Persons</td>
         <td class="c">${touristTax.nights}</td>
         <td class="c">Nacht/Pers.</td>
         <td class="r">${parseFloat(touristTax.pricePerNight || '0').toFixed(2)} €</td>
@@ -51,6 +60,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
     .map(item => {
       const lt = parseFloat(item.qty || '0') * parseFloat(item.price || '0');
       return `<tr>
+        <td class="l">${++pos}</td>
         <td>${item.name}</td>
         <td class="c">${item.qty}</td>
         <td class="c">Stk.</td>
@@ -152,7 +162,8 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
     display:grid;grid-template-columns:1fr 1fr;
     gap:2.5rem;margin-bottom:2.2rem;
   }
-  .info-lbl{font-size:12px;font-weight:700;color:#1e2d45;margin-bottom:5px;}
+  .info-lbl{font-size:12px;font-weight:700;color: #999;margin-bottom:5px;text-transform: uppercase;}
+  .info-name{font-size:14px;font-weight:700;color: #1a1a2e;}
   .info-val{font-size:13px;color:#444;line-height:1.75;}
   table{width:100%;border-collapse:collapse;}
   thead tr{border-bottom:2px solid #1e2d45;}
@@ -167,6 +178,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
   td{font-size:13px;color:#333;padding:11px 0;text-align:left;}
   td.c{text-align:center;}
   td.r{text-align:right;}
+  td.l{text-align:left;}
   .empty{text-align:center!important;color:#bbb;font-style:italic;padding:1.8rem 0!important;}
   .summary{
     display:flex;justify-content:flex-end;
@@ -184,6 +196,19 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
     font-size:15px;font-weight:700;color:#1e2d45;
     border-top:2px solid #1e2d45;
     padding-top:9px;margin-top:5px;
+  }
+  .bank {
+    background: #f8f4ee;
+    border-left: 3px solid #c9a96e;
+    padding: 12px 16px;
+    margin-top: 24px;
+    font-size: 11px;
+    color: #555;
+    line-height: 1.9;
+  }
+  strong {
+    color: #1a1a2e;
+    font-size: 12px;
   }
   .ftr{
     background:#1e2d45;
@@ -223,38 +248,41 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
       <div class="inv-title">Rechnung</div>
       <div class="inv-meta">
         Rechnungsnummer: ${meta.invoiceNo}<br>
-        Datum: ${formatDate(meta.date)}
+        Datum: ${formatDate(meta.date)}<br>
+        ${sender.email}
       </div>
     </div>
   </div>
   <div class="body">
     <div class="info-row">
       <div>
-        <div class="info-lbl">Rechnungsempfänger</div>
+        <div class="info-lbl">Von</div>
+        <div class="info-name">${sender.name}</div>
         <div class="info-val">
-          ${recipientName}<br>
-          ${recipientExtra}
-          ${recipient.address || ''}
+          ${sender.company}<br>  
+          ${sender.address}<br>
+          ${sender.city}
         </div>
       </div>
       <div>
-        <div class="info-lbl">Bankverbindung</div>
+        <div class="info-lbl">An</div>
+        <div class="info-name">${recipientName}</div>
         <div class="info-val">
-          ${sender.company} – ${sender.name}<br>
-          ${sender.bank}<br>
-          IBAN: ${sender.iban}<br>
-          BIC: ${sender.bic}
+          ${recipientExtra}
+          ${recipient.address || ''}<br>
+          ${recipient.city}
         </div>
       </div>
     </div>
     <table>
       <thead>
         <tr>
-          <th>Beschreibung</th>
-          <th class="c">Anzahl</th>
+          <th class="l">Pos.</th>
+          <th class="l">Bezeichnung</th>
+          <th class="c">Menge</th>
           <th class="c">Einheit</th>
-          <th class="r">Preis</th>
-          <th class="r">Summe</th>
+          <th class="r">Einzelpreis</th>
+          <th class="r">Gesamt (€)</th>
         </tr>
       </thead>
       <tbody>
@@ -272,9 +300,17 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
         </div>
       </div>
     </div>
+    <div class="bank">
+      <strong class="strong">${sender.company}</strong><br />
+      <strong class="strong">${sender.name}</strong><br />
+      ${sender.bank}<br />
+      IBAN: ${sender.iban}<br />
+      BIC: ${sender.bic}
+    </div>
   </div>
+  
   <div class="ftr">
-    <div class="ftr-item"><div class="ftr-icon">☎</div><span>${sender.email}</span></div>
+    <div class="ftr-item"><div class="ftr-icon">☎</div><span>${sender.phone}</span></div>
     <div class="ftr-item"><div class="ftr-icon">✉</div><span>${sender.email}</span></div>
     <div class="ftr-item"><div class="ftr-icon">⌂</div><span>${sender.address}, ${sender.city}</span></div>
   </div>

@@ -33,13 +33,21 @@ export const SenderForm: React.FC<Props> = ({ sender, onChange }) => (
         <input type="email" value={sender.email} onChange={e => onChange({ email: e.target.value })} />
       </div>
       <div>
-        <label>Bank</label>
-        <input value={sender.bank} onChange={e => onChange({ bank: e.target.value })} />
+        <label>Telefonnummer</label>
+        <input value={sender.phone} onChange={e => onChange({ phone: e.target.value })} />
       </div>
     </div>
 
-    <label>IBAN</label>
-    <input value={sender.iban} onChange={e => onChange({ iban: e.target.value })} />
+    <div className="row">
+      <div>
+        <label>Bank</label>
+        <input value={sender.bank} onChange={e => onChange({ bank: e.target.value })} />
+      </div>
+      <div>
+        <label>IBAN</label>
+        <input value={sender.iban} onChange={e => onChange({ iban: e.target.value })} />
+      </div>
+    </div>
 
     <label>BIC</label>
     <input value={sender.bic} onChange={e => onChange({ bic: e.target.value })} />

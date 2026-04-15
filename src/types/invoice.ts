@@ -13,6 +13,7 @@ export interface SenderInfo {
   address: string;
   city: string;
   email: string;
+  phone: string;
   bank: string;
   iban: string;
   bic: string;
@@ -23,12 +24,14 @@ export interface RecipientInfo {
   name: string;
   company: string;
   address: string;
+  city: string;
 }
 
 export interface TouristTax {
   nights: string;
   persons: string;
   pricePerNight: string;
+  price: string;
 }
 
 export interface InvoiceMeta {
@@ -46,6 +49,7 @@ export interface InvoiceFormData {
 }
 
 export interface InvoiceTotals {
+  ubernachtungTotal: number;
   touristTaxTotal: number;
   extraTotal: number;
   subtotal: number;
