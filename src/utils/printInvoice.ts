@@ -1,5 +1,7 @@
 import { InvoiceFormData, InvoiceTotals } from '../types/invoice';
 import { fmt, formatDate } from './invoice';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 const fontToBase64 = async (url: string): Promise<string> => {
   const res = await fetch(url);
@@ -9,9 +11,7 @@ const fontToBase64 = async (url: string): Promise<string> => {
   for (let i = 0; i < bytes.byteLength; i++) {
     binary += String.fromCharCode(bytes[i]);
   }
-  const base64 = btoa(binary);
-  const mime = url.endsWith('.otf') ? 'font/otf' : 'font/ttf';
-  return `data:${mime};base64,${base64}`;
+  return btoa(binary);
 };
 
 export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals): Promise<void> => {
@@ -47,12 +47,12 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
       </tr>
       <tr>
         <td class="l">${++pos}</td>
-        <td class="l">Tourist Tax (${touristTax.persons} Persons</td>
+        <td class="l">Tourist Tax (${touristTax.persons} Persons)</td>
         <td class="c">${touristTax.nights}</td>
         <td class="c">Nacht/Pers.</td>
         <td class="r">${parseFloat(touristTax.pricePerNight || '0').toFixed(2)} €</td>
         <td class="r">${fmt(totals.touristTaxTotal)}</td>
-       </tr>`
+      </tr>`
     : '';
 
   const extraRows = extraItems
@@ -71,7 +71,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
 
   const hasRows = hasTax || extraItems.some(i => i.name);
   const emptyRow = !hasRows
-    ? `<tr><td colspan="5" class="empty">— keine Positionen —</td></tr>`
+    ? `<tr><td colspan="6" class="empty">— keine Positionen —</td></tr>`
     : '';
 
   const summaryRows = totals.discountVal > 0
@@ -83,195 +83,55 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
 <html lang="de">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=794, initial-scale=1.0, maximum-scale=1.0"/>
-<title>Rechnung Nr. ${meta.invoiceNo}</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=794, initial-scale=1.0"/>
 <style>
   @font-face {
     font-family: 'Brush';
-    src: url('${brushBase64}') format('opentype');
-    font-weight: normal;
-    font-style: normal;
+    src: url('data:font/otf;base64,${brushBase64}') format('opentype');
   }
   @font-face {
     font-family: 'Gothic';
-    src: url('${gothicBase64}') format('truetype');
-    font-weight: normal;
-    font-style: normal;
+    src: url('data:font/ttf;base64,${gothicBase64}') format('truetype');
   }
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap');
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{
-    font-family:'DM Sans',sans-serif;
-    background:#fff;
-    color:#222;
-    -webkit-print-color-adjust:exact;
-    print-color-adjust:exact;
-  }
-  .page{
-    width:210mm;
-    min-height:297mm;
-    margin:0 auto;
-    display:flex;
-    flex-direction:column;
-    background:#fff;
-  }
-  .hdr{
-    background:#1e2d45;
-    padding:2.2rem 2.8rem;
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-  }
+  body{font-family:'DM Sans',sans-serif;background:#fff;color:#222;width:794px;}
+  .page{width:794px;height:1123px;display:flex;flex-direction:column;background:#fff;overflow:hidden;}
+  .hdr{background:#1e2d45;padding:2.2rem 2.8rem;display:flex;justify-content:space-between;align-items:flex-start;flex-shrink:0;}
   .logo{display:flex;flex-direction:column;align-items:flex-start;line-height:1;}
-  .logo-title{
-    font-family:'Brush',cursive;
-    font-size:78px;font-weight:400;
-    color:#fff;
-    margin-left:-3px;
-    line-height:0.95;
-    letter-spacing:1px;
-  }
-  .logo-subtitle{
-    font-family:'Gothic',sans-serif;
-    font-weight:400;
-    font-size:24px;
-    color:rgba(255,255,255,.85);
-    letter-spacing:8px;
-    margin-top:-10px;
-    margin-bottom:6px;
-  }
-  .logo-sub-name{
-    font-size:11px;font-weight:400;
-    color:rgba(255,255,255,.5);
-    letter-spacing:.05em;
-    margin-top:2px;
-  }
+  .logo-title{font-family:'Brush',cursive;font-size:78px;font-weight:400;color:#fff;margin-left:-3px;line-height:0.95;}
+  .logo-subtitle{font-family:'Gothic',sans-serif;font-size:24px;color:rgba(255,255,255,.85);letter-spacing:8px;margin-top:-10px;margin-bottom:6px;}
+  .logo-sub-name{font-size:11px;color:rgba(255,255,255,.5);margin-top:2px;}
   .hdr-right{text-align:right;}
-  .inv-title{
-    font-family:'Playfair Display',serif;
-    font-size:2.6rem;font-weight:400;
-    letter-spacing:.2em;text-transform:uppercase;
-    color:#fff;line-height:1;
-  }
-  .inv-meta{
-    font-size:11.5px;
-    color:rgba(255,255,255,.55);
-    margin-top:10px;line-height:2;
-  }
-  .body{padding:2.2rem 2.8rem;flex:1;}
-  .info-row{
-    display:grid;grid-template-columns:1fr 1fr;
-    gap:2.5rem;margin-bottom:2.2rem;
-  }
-  .info-lbl{font-size:12px;font-weight:700;color: #999;margin-bottom:5px;text-transform: uppercase;}
-  .info-name{font-size:14px;font-weight:700;color: #1a1a2e;}
+  .inv-title{font-family:'Playfair Display',serif;font-size:2.6rem;font-weight:400;letter-spacing:.2em;text-transform:uppercase;color:#fff;}
+  .inv-meta{font-size:11.5px;color:rgba(255,255,255,.55);margin-top:10px;line-height:2;}
+  .body{padding:2rem 2.8rem;flex:1;}
+  .info-row{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;margin-bottom:2rem;}
+  .info-lbl{font-size:11px;font-weight:700;color:#999;margin-bottom:5px;text-transform:uppercase;}
+  .info-name{font-size:14px;font-weight:700;color:#1a1a2e;}
   .info-val{font-size:13px;color:#444;line-height:1.75;}
   table{width:100%;border-collapse:collapse;}
   thead tr{border-bottom:2px solid #1e2d45;}
-  th{
-    font-size:10.5px;font-weight:700;
-    text-transform:uppercase;letter-spacing:.07em;
-    color:#1e2d45;padding:9px 0;text-align:left;
-  }
-  th.c{text-align:center;}
-  th.r{text-align:right;}
+  th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#1e2d45;padding:8px 0;text-align:left;}
+  th.c{text-align:center;}th.r{text-align:right;}
   tbody tr{border-bottom:1px solid #ebebeb;}
-  td{font-size:13px;color:#333;padding:11px 0;text-align:left;}
-  td.c{text-align:center;}
-  td.r{text-align:right;}
-  td.l{text-align:left;}
-  .empty{text-align:center!important;color:#bbb;font-style:italic;padding:1.8rem 0!important;}
-  .summary{
-    display:flex;justify-content:flex-end;
-    margin-top:1.8rem;
-    padding-top:1.2rem;
-    border-top:1.5px solid #ccc;
-  }
+  td{font-size:13px;color:#333;padding:10px 0;text-align:left;}
+  td.c{text-align:center;}td.r{text-align:right;}td.l{text-align:left;}
+  .empty{text-align:center!important;color:#bbb;font-style:italic;}
+  .summary{display:flex;justify-content:flex-end;margin-top:1.5rem;padding-top:1rem;border-top:1.5px solid #ccc;}
   .summary-inner{width:260px;}
-  .s-line{
-    display:flex;justify-content:space-between;
-    font-size:13px;color:#444;padding:4px 0;
-  }
+  .s-line{display:flex;justify-content:space-between;font-size:13px;color:#444;padding:4px 0;}
   .s-line.red{color:#b04040;}
-  .s-line.total{
-    font-size:15px;font-weight:700;color:#1e2d45;
-    border-top:2px solid #1e2d45;
-    padding-top:9px;margin-top:5px;
-  }
-  .bank {
-    background: #f8f4ee;
-    border-left: 3px solid #c9a96e;
-    padding: 12px 16px;
-    margin-top: 24px;
-    font-size: 11px;
-    color: #555;
-    line-height: 1.9;
-  }
-  strong {
-    color: #1a1a2e;
-    font-size: 12px;
-  }
-  .ftr{
-    background:#1e2d45;
-    padding:1rem 2.8rem;
-    display:flex;justify-content:space-between;
-    align-items:center;flex-wrap:wrap;gap:.75rem;
-    margin-top:auto;
-  }
-  .ftr-item{
-    display:flex;align-items:center;gap:7px;
-    font-size:11px;color:rgba(255,255,255,.6);
-  }
-  .ftr-icon{
-    width:18px;height:18px;
-    border:1.5px solid rgba(255,255,255,.35);
-    border-radius:50%;
-    display:flex;align-items:center;justify-content:center;
-    font-size:9px;color:rgba(255,255,255,.55);
-    flex-shrink:0;
-  }
-  @media print{
-    @page{
-      margin:0;
-      size:210mm 297mm portrait;
-      -webkit-margin-before:0;
-      -webkit-margin-after:0;
-    }
-    html,body{
-      margin:0;
-      padding:0;
-      -webkit-print-color-adjust:exact;
-      print-color-adjust:exact;
-    }
-    .page{
-      width:210mm !important;
-      max-width:210mm !important;
-      min-height:297mm;
-      height:297mm;
-      overflow:hidden;
-      page-break-after:avoid;
-      page-break-inside:avoid;
-    }
-  }
+  .s-line.total{font-size:15px;font-weight:700;color:#1e2d45;border-top:2px solid #1e2d45;padding-top:9px;margin-top:5px;}
+  .bank{background:#f8f4ee;border-left:3px solid #c9a96e;padding:12px 16px;margin-top:20px;font-size:11px;color:#555;line-height:1.9;}
+  .bank strong{color:#1a1a2e;font-size:12px;}
+  .ftr{background:#1e2d45;padding:1rem 2.8rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem;flex-shrink:0;}
+  .ftr-item{display:flex;align-items:center;gap:7px;font-size:11px;color:rgba(255,255,255,.6);}
+  .ftr-icon{width:18px;height:18px;border:1.5px solid rgba(255,255,255,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(255,255,255,.55);}
 </style>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var page = document.querySelector('.page');
-    var pageH = page.scrollHeight;
-    var maxH = 297 * 3.7795; // 297mm в пікселях
-    if (pageH > maxH) {
-      var scale = maxH / pageH;
-      page.style.transformOrigin = 'top left';
-      page.style.transform = 'scale(' + scale + ')';
-      page.style.width = (100 / scale) + '%';
-      document.body.style.height = maxH + 'px';
-      document.body.style.overflow = 'hidden';
-    }
-  });
-</script>
 </head>
 <body>
-<div class="page">
+<div class="page" id="page">
   <div class="hdr">
     <div class="logo">
       <div class="logo-title">${(sender.company || 'Wilena').split(' ')[0]}</div>
@@ -292,20 +152,12 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
       <div>
         <div class="info-lbl">Von</div>
         <div class="info-name">${sender.name}</div>
-        <div class="info-val">
-          ${sender.company}<br>  
-          ${sender.address}<br>
-          ${sender.city}
-        </div>
+        <div class="info-val">${sender.company}<br>${sender.address}<br>${sender.city}</div>
       </div>
       <div>
         <div class="info-lbl">An</div>
         <div class="info-name">${recipientName}</div>
-        <div class="info-val">
-          ${recipientExtra}
-          ${recipient.address || ''}<br>
-          ${recipient.city}
-        </div>
+        <div class="info-val">${recipientExtra}${recipient.address || ''}<br>${recipient.city}</div>
       </div>
     </div>
     <table>
@@ -319,11 +171,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
           <th class="r">Gesamt (€)</th>
         </tr>
       </thead>
-      <tbody>
-        ${taxRow}
-        ${extraRows}
-        ${emptyRow}
-      </tbody>
+      <tbody>${taxRow}${extraRows}${emptyRow}</tbody>
     </table>
     <div class="summary">
       <div class="summary-inner">
@@ -335,39 +183,54 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
       </div>
     </div>
     <div class="bank">
-      <strong class="strong">${sender.company}</strong><br />
-      <strong class="strong">${sender.name}</strong><br />
-      ${sender.bank}<br />
-      IBAN: ${sender.iban}<br />
+      <strong>${sender.company}</strong><br>
+      <strong>${sender.name}</strong><br>
+      ${sender.bank}<br>
+      IBAN: ${sender.iban}<br>
       BIC: ${sender.bic}
     </div>
   </div>
-  
   <div class="ftr">
     <div class="ftr-item"><div class="ftr-icon">☎</div><span>${sender.phone}</span></div>
     <div class="ftr-item"><div class="ftr-icon">✉</div><span>${sender.email}</span></div>
     <div class="ftr-item"><div class="ftr-icon">⌂</div><span>${sender.address}, ${sender.city}</span></div>
   </div>
 </div>
-<script>
-  window.onload = function() {
-    document.fonts.ready.then(function() {
-      window.print();
-      window.onafterprint = function() { window.close(); };
-    });
-  };
-</script>
 </body>
 </html>`;
 
-  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
+  const iframe = document.createElement('iframe');
+  iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;height:1123px;border:none;visibility:hidden;';
+  document.body.appendChild(iframe);
 
-  const a = document.createElement('a');
-  a.href = url;
-  a.target = '_blank';
-  a.rel = 'noopener';
-  a.click();
+  await new Promise<void>((resolve) => {
+    iframe.onload = async () => {
+      
+      try { await iframe.contentDocument!.fonts.ready; } catch {}
+      await new Promise(r => setTimeout(r, 500));
 
-  setTimeout(() => URL.revokeObjectURL(url), 10_000);
+      const pageEl = iframe.contentDocument!.getElementById('page')!;
+
+      const canvas = await html2canvas(pageEl, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        width: 794,
+        height: 1123,
+        windowWidth: 794,
+        windowHeight: 1123,
+      });
+
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+      pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+      pdf.save(`Rechnung-${meta.invoiceNo}.pdf`);
+
+      document.body.removeChild(iframe);
+      resolve();
+    };
+
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    iframe.src = URL.createObjectURL(blob);
+  });
 };
