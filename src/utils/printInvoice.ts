@@ -127,7 +127,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
   .bank strong{color:#1a1a2e;font-size:12px;}
   .ftr{background:#1e2d45;padding:1rem 2.8rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem;flex-shrink:0;}
   .ftr-item{display:flex;align-items:center;gap:7px;font-size:11px;color:rgba(255,255,255,.6);}
-  .ftr-icon{width:18px;height:18px;border:1.5px solid rgba(255,255,255,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(255,255,255,.55);}
+  .ftr-icon{width:18px;height:18px;border:1.5px solid rgba(255,255,255,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(255,255,255,.55) !important; -webkit-text-fill-color: rgba(255,255,255,.55) !important;}
 </style>
 </head>
 <body>
