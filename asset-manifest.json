@@ -1,7 +1,9 @@
 {
   "files": {
     "main.css": "/invoice/static/css/main.9de1c880.css",
-    "main.js": "/invoice/static/js/main.cea190b2.js",
+    "main.js": "/invoice/static/js/main.79544d81.js",
+    "static/js/977.327556f3.chunk.js": "/invoice/static/js/977.327556f3.chunk.js",
+    "static/js/732.6d7a913d.chunk.js": "/invoice/static/js/732.6d7a913d.chunk.js",
     "static/media/NanumBrushScript-Regular.ttf": "/invoice/static/media/NanumBrushScript-Regular.8f807e660f1af7da3aa7.ttf",
     "static/media/Roboto-VariableFont_wdthwght.ttf": "/invoice/static/media/Roboto-VariableFont_wdthwght.3c9d0f6513f7cfe91016.ttf",
     "static/media/AlexBrush-Regular.ttf": "/invoice/static/media/AlexBrush-Regular.c8f6ee8046b4517ab6d7.ttf",
@@ -9,10 +11,12 @@
     "static/media/BrushScriptOpti-Regular.otf": "/invoice/static/media/BrushScriptOpti-Regular.62521cd4c7d3b1c9ba7b.otf",
     "index.html": "/invoice/index.html",
     "main.9de1c880.css.map": "/invoice/static/css/main.9de1c880.css.map",
-    "main.cea190b2.js.map": "/invoice/static/js/main.cea190b2.js.map"
+    "main.79544d81.js.map": "/invoice/static/js/main.79544d81.js.map",
+    "977.327556f3.chunk.js.map": "/invoice/static/js/977.327556f3.chunk.js.map",
+    "732.6d7a913d.chunk.js.map": "/invoice/static/js/732.6d7a913d.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.9de1c880.css",
-    "static/js/main.cea190b2.js"
+    "static/js/main.79544d81.js"
   ]
 }
