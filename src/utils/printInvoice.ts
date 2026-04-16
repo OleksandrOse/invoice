@@ -231,16 +231,44 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
     flex-shrink:0;
   }
   @media print{
-    @page{margin:0;size:210mm 297mm portrait;}
-    body{margin:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    @page{
+      margin:0;
+      size:210mm 297mm portrait;
+      -webkit-margin-before:0;
+      -webkit-margin-after:0;
+    }
+    html,body{
+      margin:0;
+      padding:0;
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+    }
     .page{
       width:210mm !important;
-      min-height:297mm;
       max-width:210mm !important;
+      min-height:297mm;
+      height:297mm;
       overflow:hidden;
+      page-break-after:avoid;
+      page-break-inside:avoid;
     }
   }
 </style>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var page = document.querySelector('.page');
+    var pageH = page.scrollHeight;
+    var maxH = 297 * 3.7795; // 297mm в пікселях
+    if (pageH > maxH) {
+      var scale = maxH / pageH;
+      page.style.transformOrigin = 'top left';
+      page.style.transform = 'scale(' + scale + ')';
+      page.style.width = (100 / scale) + '%';
+      document.body.style.height = maxH + 'px';
+      document.body.style.overflow = 'hidden';
+    }
+  });
+</script>
 </head>
 <body>
 <div class="page">
