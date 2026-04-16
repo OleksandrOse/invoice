@@ -83,6 +83,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
 <html lang="de">
 <head>
 <meta charset="UTF-8"/>
+<meta name="viewport" content="width=794, initial-scale=1.0, maximum-scale=1.0"/>
 <title>Rechnung Nr. ${meta.invoiceNo}</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -230,9 +231,14 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
     flex-shrink:0;
   }
   @media print{
-    @page{margin:0;size:A4 portrait;}
-    body{margin:0;}
-    .page{width:100%;min-height:100vh;}
+    @page{margin:0;size:210mm 297mm portrait;}
+    body{margin:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .page{
+      width:210mm !important;
+      min-height:297mm;
+      max-width:210mm !important;
+      overflow:hidden;
+    }
   }
 </style>
 </head>
@@ -326,11 +332,14 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
 </body>
 </html>`;
 
-  const pw = window.open('', '_blank', 'width=900,height=750');
-  if (!pw) {
-    alert('Erlauben Sie Pop-ups für diese Website in Ihrem Browser!');
-    return;
-  }
-  pw.document.write(html);
-  pw.document.close();
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.target = '_blank';
+  a.rel = 'noopener';
+  a.click();
+
+  setTimeout(() => URL.revokeObjectURL(url), 10_000);
 };

@@ -234,3 +234,93 @@
   background: $gold;
   flex-shrink: 0;
 }
+
+@media (max-width: 600px) {
+  .invoice {
+    font-size: 13px;
+  }
+
+  // Header
+  .header {
+    flex-direction: column;
+    padding: 1.25rem 1.25rem 1rem;
+    gap: 0.75rem;
+  }
+
+  .logo-title {
+    font-size: 64px;
+  }
+
+  .logo-subtitle {
+    font-size: 24px;
+    letter-spacing: 5px;
+    margin: -12px 0 6px;
+  }
+
+  .titleArea {
+    text-align: left;
+  }
+
+  .title {
+    font-size: 1.4rem;
+  }
+
+  // Body
+  .body {
+    padding: 1.25rem;
+  }
+
+  // Addresses — stack vertically
+  .addresses {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  // Table — horizontal scroll for narrow screens
+  .table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+
+    th, td {
+      padding: 8px 6px 8px 0;
+      font-size: 12px;
+    }
+  }
+
+  // Totals — full width instead of fixed 230px
+  .totalsWrap {
+    justify-content: stretch;
+  }
+
+  .totalsInner {
+    width: 100%;
+  }
+
+  .totalRow {
+    font-size: 13px;
+
+    &.final {
+      font-size: 14px;
+    }
+  }
+
+  // Bank info
+  .bank {
+    font-size: 11px;
+    padding: 0.6rem 0.75rem;
+  }
+
+  // Footer — stack vertically
+  .footer {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem 1.25rem;
+    gap: 0.4rem;
+  }
+
+  .footerItem {
+    font-size: 11px;
+  }
+}

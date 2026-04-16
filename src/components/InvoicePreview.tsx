@@ -159,7 +159,7 @@ const InvoiceTotalsBlock: React.FC<TotalsProps> = ({ totals, discount }) => (
             <span>Zwischensumme</span>
             <span>{fmt(totals.subtotal)}</span>
           </div>
-          <div className={`$totalRow} $discount}`}>
+          <div className={`totalRow discount`}>
             <span>Rabatt ({discount}%)</span>
             <span>−{fmt(totals.discountVal)}</span>
           </div>
