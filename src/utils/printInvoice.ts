@@ -14,6 +14,13 @@ const fontToBase64 = async (url: string): Promise<string> => {
   return btoa(binary);
 };
 
+// SVG іконки для футера (inline, не потребують зовнішніх файлів)
+const icons = {
+  phone: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>`,
+  email: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
+  address: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
+};
+
 export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals): Promise<void> => {
   const { sender, recipient, meta, touristTax, extraItems, discount } = form;
 
@@ -33,27 +40,25 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
 
   const recipientExtra =
     recipient.type === 'person' && recipient.company
-      ? `${recipient.company}<br>`
-      : '';
+      ? `${recipient.company}<br>` : '';
 
-  const taxRow = hasTax
-    ? `<tr>
-        <td class="l">${++pos}</td>
-        <td class="l">Ubernachtung</td>
-        <td class="c">${touristTax.nights}</td>
-        <td class="c">Nacht</td>
-        <td class="r">${parseFloat(touristTax.price || '0').toFixed(2)} €</td>
-        <td class="r">${fmt(totals.ubernachtungTotal)}</td>
-      </tr>
-      <tr>
-        <td class="l">${++pos}</td>
-        <td class="l">Tourist Tax (${touristTax.persons} Persons)</td>
-        <td class="c">${touristTax.nights}</td>
-        <td class="c">Nacht/Pers.</td>
-        <td class="r">${parseFloat(touristTax.pricePerNight || '0').toFixed(2)} €</td>
-        <td class="r">${fmt(totals.touristTaxTotal)}</td>
-      </tr>`
-    : '';
+  const taxRow = hasTax ? `
+    <tr>
+      <td class="l">${++pos}</td>
+      <td class="l">Ubernachtung</td>
+      <td class="c">${touristTax.nights}</td>
+      <td class="c">Nacht</td>
+      <td class="r">${parseFloat(touristTax.price || '0').toFixed(2)} €</td>
+      <td class="r">${fmt(totals.ubernachtungTotal)}</td>
+    </tr>
+    <tr>
+      <td class="l">${++pos}</td>
+      <td class="l">Tourist Tax (${touristTax.persons} Persons)</td>
+      <td class="c">${touristTax.nights}</td>
+      <td class="c">Nacht/Pers.</td>
+      <td class="r">${parseFloat(touristTax.pricePerNight || '0').toFixed(2)} €</td>
+      <td class="r">${fmt(totals.touristTaxTotal)}</td>
+    </tr>` : '';
 
   const extraRows = extraItems
     .filter(i => i.name)
@@ -71,8 +76,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
 
   const hasRows = hasTax || extraItems.some(i => i.name);
   const emptyRow = !hasRows
-    ? `<tr><td colspan="6" class="empty">— keine Positionen —</td></tr>`
-    : '';
+    ? `<tr><td colspan="6" class="empty">— keine Positionen —</td></tr>` : '';
 
   const summaryRows = totals.discountVal > 0
     ? `<div class="s-line"><span>Zwischensumme:</span><span>${fmt(totals.subtotal)}</span></div>
@@ -83,51 +87,44 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
 <html lang="de">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=794, initial-scale=1.0"/>
 <style>
-  @font-face {
-    font-family: 'Brush';
-    src: url('data:font/otf;base64,${brushBase64}') format('opentype');
-  }
-  @font-face {
-    font-family: 'Gothic';
-    src: url('data:font/ttf;base64,${gothicBase64}') format('truetype');
-  }
+  @font-face{font-family:'Brush';src:url('data:font/otf;base64,${brushBase64}') format('opentype');}
+  @font-face{font-family:'Gothic';src:url('data:font/ttf;base64,${gothicBase64}') format('truetype');}
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap');
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'DM Sans',sans-serif;background:#fff;color:#222;width:794px;}
-  .page{width:794px;height:1123px;display:flex;flex-direction:column;background:#fff;overflow:hidden;}
-  .hdr{background:#1e2d45;padding:2.2rem 2.8rem;display:flex;justify-content:space-between;align-items:flex-start;flex-shrink:0;}
+  body{font-family:'DM Sans',sans-serif;background:#fff;color:#222;width:794px;margin:0;padding:0;}
+  .page{width:794px;height:1123px;display:flex;flex-direction:column;background:#fff;overflow:hidden;position:relative;}
+  .hdr{background:#1e2d45;padding:35px 45px;display:flex;justify-content:space-between;align-items:flex-start;flex-shrink:0;}
   .logo{display:flex;flex-direction:column;align-items:flex-start;line-height:1;}
   .logo-title{font-family:'Brush',cursive;font-size:78px;font-weight:400;color:#fff;margin-left:-3px;line-height:0.95;}
   .logo-subtitle{font-family:'Gothic',sans-serif;font-size:24px;color:rgba(255,255,255,.85);letter-spacing:8px;margin-top:-10px;margin-bottom:6px;}
   .logo-sub-name{font-size:11px;color:rgba(255,255,255,.5);margin-top:2px;}
   .hdr-right{text-align:right;}
-  .inv-title{font-family:'Playfair Display',serif;font-size:2.6rem;font-weight:400;letter-spacing:.2em;text-transform:uppercase;color:#fff;}
-  .inv-meta{font-size:11.5px;color:rgba(255,255,255,.55);margin-top:10px;line-height:2;}
-  .body{padding:2rem 2.8rem;flex:1;}
-  .info-row{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;margin-bottom:2rem;}
-  .info-lbl{font-size:11px;font-weight:700;color:#999;margin-bottom:5px;text-transform:uppercase;}
+  .inv-title{font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:400;letter-spacing:.2em;text-transform:uppercase;color:#fff;}
+  .inv-meta{font-size:11px;color:rgba(255,255,255,.55);margin-top:10px;line-height:2;}
+  .body{padding:30px 45px;flex:1;overflow:hidden;}
+  .info-row{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:28px;}
+  .info-lbl{font-size:10px;font-weight:700;color:#999;margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em;}
   .info-name{font-size:14px;font-weight:700;color:#1a1a2e;}
-  .info-val{font-size:13px;color:#444;line-height:1.75;}
+  .info-val{font-size:12px;color:#444;line-height:1.75;margin-top:2px;}
   table{width:100%;border-collapse:collapse;}
   thead tr{border-bottom:2px solid #1e2d45;}
   th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#1e2d45;padding:8px 0;text-align:left;}
   th.c{text-align:center;}th.r{text-align:right;}
   tbody tr{border-bottom:1px solid #ebebeb;}
-  td{font-size:13px;color:#333;padding:10px 0;text-align:left;}
+  td{font-size:12px;color:#333;padding:9px 0;text-align:left;}
   td.c{text-align:center;}td.r{text-align:right;}td.l{text-align:left;}
   .empty{text-align:center!important;color:#bbb;font-style:italic;}
-  .summary{display:flex;justify-content:flex-end;margin-top:1.5rem;padding-top:1rem;border-top:1.5px solid #ccc;}
-  .summary-inner{width:260px;}
-  .s-line{display:flex;justify-content:space-between;font-size:13px;color:#444;padding:4px 0;}
+  .summary{display:flex;justify-content:flex-end;margin-top:20px;padding-top:14px;border-top:1.5px solid #ccc;}
+  .summary-inner{width:240px;}
+  .s-line{display:flex;justify-content:space-between;font-size:12px;color:#444;padding:3px 0;}
   .s-line.red{color:#b04040;}
-  .s-line.total{font-size:15px;font-weight:700;color:#1e2d45;border-top:2px solid #1e2d45;padding-top:9px;margin-top:5px;}
-  .bank{background:#f8f4ee;border-left:3px solid #c9a96e;padding:12px 16px;margin-top:20px;font-size:11px;color:#555;line-height:1.9;}
-  .bank strong{color:#1a1a2e;font-size:12px;}
-  .ftr{background:#1e2d45;padding:1rem 2.8rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem;flex-shrink:0;}
-  .ftr-item{display:flex;align-items:center;gap:7px;font-size:11px;color:rgba(255,255,255,.6);}
-  .ftr-icon{width:18px;height:18px;border:1.5px solid rgba(255,255,255,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(255,255,255,.55) !important; -webkit-text-fill-color: rgba(255,255,255,.55) !important;}
+  .s-line.total{font-size:14px;font-weight:700;color:#1e2d45;border-top:2px solid #1e2d45;padding-top:8px;margin-top:4px;}
+  .bank{background:#f8f4ee;border-left:3px solid #c9a96e;padding:11px 15px;margin-top:18px;font-size:11px;color:#555;line-height:1.85;}
+  .bank strong{color:#1a1a2e;font-size:11px;font-weight:700;}
+  .ftr{background:#1e2d45;padding:14px 45px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+  .ftr-item{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.6);}
+  .ftr-icon{width:22px;height:22px;border:1.5px solid rgba(255,255,255,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 </style>
 </head>
 <body>
@@ -191,43 +188,79 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
     </div>
   </div>
   <div class="ftr">
-    <div class="ftr-item"><div class="ftr-icon">☎</div><span>${sender.phone}</span></div>
-    <div class="ftr-item"><div class="ftr-icon">✉</div><span>${sender.email}</span></div>
-    <div class="ftr-item"><div class="ftr-icon">⌂</div><span>${sender.address}, ${sender.city}</span></div>
+    <div class="ftr-item">
+      <div class="ftr-icon">${icons.phone}</div>
+      <span>${sender.phone}</span>
+    </div>
+    <div class="ftr-item">
+      <div class="ftr-icon">${icons.email}</div>
+      <span>${sender.email}</span>
+    </div>
+    <div class="ftr-item">
+      <div class="ftr-icon">${icons.address}</div>
+      <span>${sender.address}, ${sender.city}</span>
+    </div>
   </div>
 </div>
 </body>
 </html>`;
 
+  // Safari: iframe має бути visible і в межах viewport
   const iframe = document.createElement('iframe');
-  iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;height:1123px;border:none;visibility:hidden;';
+  iframe.style.cssText = [
+    'position:fixed',
+    'top:0',
+    'left:0',
+    'width:794px',
+    'height:1123px',
+    'border:none',
+    'opacity:0',           // прозорий але не hidden — Safari рендерить правильно
+    'pointer-events:none',
+    'z-index:-1',
+  ].join(';');
+
   document.body.appendChild(iframe);
 
-  await new Promise<void>((resolve) => {
+  await new Promise<void>((resolve, reject) => {
     iframe.onload = async () => {
-      
-      try { await iframe.contentDocument!.fonts.ready; } catch {}
-      await new Promise(r => setTimeout(r, 500));
+      try {
+        const doc = iframe.contentDocument!;
 
-      const pageEl = iframe.contentDocument!.getElementById('page')!;
+        // Чекаємо шрифти
+        try { await doc.fonts.ready; } catch {}
 
-      const canvas = await html2canvas(pageEl, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        width: 794,
-        height: 1123,
-        windowWidth: 794,
-        windowHeight: 1123,
-      });
+        // Safari потребує більше часу на рендер
+        await new Promise(r => setTimeout(r, 800));
 
-      const imgData = canvas.toDataURL('image/jpeg', 0.95);
-      const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-      pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
-      pdf.save(`Rechnung-${meta.invoiceNo}.pdf`);
+        const pageEl = doc.getElementById('page')!;
 
-      document.body.removeChild(iframe);
-      resolve();
+        const canvas = await html2canvas(pageEl, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: false,  // false для Safari
+          foreignObjectRendering: false, // вимкнути для Safari
+          width: 794,
+          height: 1123,
+          windowWidth: 794,
+          windowHeight: 1123,
+          x: 0,
+          y: 0,
+          scrollX: 0,
+          scrollY: 0,
+          backgroundColor: '#ffffff',
+        });
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+        pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+        pdf.save(`Rechnung-${meta.invoiceNo}.pdf`);
+
+      } catch (e) {
+        reject(e);
+      } finally {
+        document.body.removeChild(iframe);
+        resolve();
+      }
     };
 
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
