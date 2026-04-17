@@ -121,8 +121,8 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
   .s-line.red{color:#b04040;}
   .s-line.total{font-size:14px;font-weight:700;color:#1e2d45;border-top:2px solid #1e2d45;padding-top:8px;margin-top:4px;}
   .bank{background:#f8f4ee;border-left:3px solid #c9a96e;padding:11px 15px;margin-top:18px;font-size:11px;color:#555;line-height:1.85;}
-  .bank strong{color:#1a1a2e;font-size:11px;font-weight:700;}
-  .bank-line{display:block;line-height:1.9;}
+  .bank-line{display:block;line-height:1.9;word-spacing:normal;white-space:pre-wrap;}
+  .bank strong{display:block;word-spacing:0.15em;letter-spacing:normal;}
   .ftr{background:#1e2d45;padding:14px 45px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
   .ftr-item{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.6);}
   .ftr-icon{width:22px;height:22px;border:1.5px solid rgba(255,255,255,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -181,8 +181,8 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
       </div>
     </div>
     <div class="bank">
-      <div class="bank-line"><strong>${sender.company}</strong></div>
-      <div class="bank-line"><strong>${sender.name}</strong></div>
+      <div class="bank-line"><strong>${sender.company.replace(/ /g, '\u00A0')}</strong></div>
+      <div class="bank-line"><strong>${sender.name.replace(/ /g, '\u00A0')}</strong></div>
       <div class="bank-line">${sender.bank}</div>
       <div class="bank-line">IBAN: ${sender.iban}</div>
       <div class="bank-line">BIC: ${sender.bic}</div>
