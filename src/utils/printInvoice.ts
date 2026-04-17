@@ -181,8 +181,8 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
       </div>
     </div>
     <div class="bank">
-      <div class="bank-line"><strong>${sender.company.replace(/ /g, '\u00A0')}</strong></div>
-      <div class="bank-line"><strong>${sender.name.replace(/ /g, '\u00A0')}</strong></div>
+       <div class="bank-line">${sender.company.split(' ').map(w => `<strong>${w}</strong>`).join('<span style="display:inline-block;width:5px"></span>')}</div>
+      <div class="bank-line">${sender.name.split(' ').map(w => `<strong>${w}</strong>`).join('<span style="display:inline-block;width:5px"></span>')}</div>
       <div class="bank-line">${sender.bank}</div>
       <div class="bank-line">IBAN: ${sender.iban}</div>
       <div class="bank-line">BIC: ${sender.bic}</div>
