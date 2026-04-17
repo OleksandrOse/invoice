@@ -122,6 +122,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
   .s-line.total{font-size:14px;font-weight:700;color:#1e2d45;border-top:2px solid #1e2d45;padding-top:8px;margin-top:4px;}
   .bank{background:#f8f4ee;border-left:3px solid #c9a96e;padding:11px 15px;margin-top:18px;font-size:11px;color:#555;line-height:1.85;}
   .bank strong{color:#1a1a2e;font-size:11px;font-weight:700;}
+  .bank-line{display:block;line-height:1.9;}
   .ftr{background:#1e2d45;padding:14px 45px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
   .ftr-item{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.6);}
   .ftr-icon{width:22px;height:22px;border:1.5px solid rgba(255,255,255,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -180,11 +181,11 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
       </div>
     </div>
     <div class="bank">
-      <strong>${sender.company}</strong><br>
-      <strong>${sender.name}</strong><br>
-      ${sender.bank}<br>
-      IBAN: ${sender.iban}<br>
-      BIC: ${sender.bic}
+      <div class="bank-line"><strong>${sender.company}</strong></div>
+      <div class="bank-line"><strong>${sender.name}</strong></div>
+      <div class="bank-line">${sender.bank}</div>
+      <div class="bank-line">IBAN: ${sender.iban}</div>
+      <div class="bank-line">BIC: ${sender.bic}</div>
     </div>
   </div>
   <div class="ftr">
@@ -205,7 +206,6 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
 </body>
 </html>`;
 
-  // Safari: iframe має бути visible і в межах viewport
   const iframe = document.createElement('iframe');
   iframe.style.cssText = [
     'position:fixed',
@@ -214,7 +214,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
     'width:794px',
     'height:1123px',
     'border:none',
-    'opacity:0',           // прозорий але не hidden — Safari рендерить правильно
+    'opacity:0',           
     'pointer-events:none',
     'z-index:-1',
   ].join(';');
@@ -226,10 +226,8 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
       try {
         const doc = iframe.contentDocument!;
 
-        // Чекаємо шрифти
         try { await doc.fonts.ready; } catch {}
 
-        // Safari потребує більше часу на рендер
         await new Promise(r => setTimeout(r, 800));
 
         const pageEl = doc.getElementById('page')!;
@@ -237,8 +235,8 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
         const canvas = await html2canvas(pageEl, {
           scale: 2,
           useCORS: true,
-          allowTaint: false,  // false для Safari
-          foreignObjectRendering: false, // вимкнути для Safari
+          allowTaint: false, 
+          foreignObjectRendering: false,
           width: 794,
           height: 1123,
           windowWidth: 794,
