@@ -14,7 +14,6 @@ const fontToBase64 = async (url: string): Promise<string> => {
   return btoa(binary);
 };
 
-// SVG іконки для футера (inline, не потребують зовнішніх файлів)
 const icons = {
   phone: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>`,
   email: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
@@ -83,6 +82,9 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
        <div class="s-line red"><span>Rabatt (-${discount}%)</span><span>-${fmt(totals.discountVal)}</span></div>`
     : '';
 
+  const safeName = (sender.name || '').replace(/ /g, '\u00A0');
+  const safeCompany = (sender.company || '').replace(/ /g, '\u00A0');
+
   const html = `<!DOCTYPE html>
 <html lang="de">
 <head>
@@ -121,8 +123,9 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
   .s-line.red{color:#b04040;}
   .s-line.total{font-size:14px;font-weight:700;color:#1e2d45;border-top:2px solid #1e2d45;padding-top:8px;margin-top:4px;}
   .bank{background:#f8f4ee;border-left:3px solid #c9a96e;padding:11px 15px;margin-top:18px;font-size:11px;color:#555;line-height:1.85;}
-  .bank-line{display:block;line-height:1.9;word-spacing:normal;white-space:pre-wrap;}
+  .bank-line{display:block;line-height:1.9;word-spacing:0.08em;white-space:normal;overflow-wrap:break-word;}
   .bank strong{display:block;word-spacing:0.15em;letter-spacing:normal;}
+  .bank-bold{font-weight:700;color:#1a1a2e;font-size:11px;white-space:normal;word-spacing:0.08em;letter-spacing:0.02em;}
   .ftr{background:#1e2d45;padding:14px 45px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
   .ftr-item{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.6);}
   .ftr-icon{width:22px;height:22px;border:1.5px solid rgba(255,255,255,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -181,8 +184,8 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
       </div>
     </div>
     <div class="bank">
-       <div class="bank-line">${sender.company.split(' ').map(w => `<strong>${w}</strong>`).join('<span style="display:inline-block;width:5px"></span>')}</div>
-      <div class="bank-line">${sender.name.split(' ').map(w => `<strong>${w}</strong>`).join('<span style="display:inline-block;width:5px"></span>')}</div>
+      <div class="bank-line bank-bold">${safeCompany}</div>
+      <div class="bank-line bank-bold">${safeName}</div>
       <div class="bank-line">${sender.bank}</div>
       <div class="bank-line">IBAN: ${sender.iban}</div>
       <div class="bank-line">BIC: ${sender.bic}</div>
