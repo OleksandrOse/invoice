@@ -1,7 +1,7 @@
 import { InvoiceFormData, InvoiceTotals } from '../types/invoice';
 
 export const fmt = (n: number): string =>
-  n.toFixed(2).replace('.', ',') + ' €';
+  n.toFixed(2).replace('.', ',') + '\u00A0€';
 
 export const formatDate = (d: string): string => {
   if (!d) return '';
