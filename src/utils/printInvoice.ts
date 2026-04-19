@@ -140,6 +140,12 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
     white-space: nowrap;
     letter-spacing: 0.04em;
   }
+  .footer-address {
+    color: rgba(255,255,255,.6);
+    white-space: nowrap;
+    letter-spacing: 0.03em;
+    word-spacing: 0.15em;
+  }
   </style>
 </head>
 <body>
@@ -217,7 +223,9 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
     </div>
     <div class="ftr-item">
       <div class="ftr-icon">${icons.address}</div>
-      <span style="color:rgba(255,255,255,.6);white-space:normal;word-spacing:0.08em;">${safeAddress},&nbsp;${safeCity}</span>
+      <span class="footer-address">
+        ${sender.address}, ${sender.city}
+      </span>
     </div>
   </div>
 </div>
