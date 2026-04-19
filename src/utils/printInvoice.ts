@@ -82,13 +82,13 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
        <div class="s-line red"><span>Rabatt (-${discount}%)</span><span>-${fmt(totals.discountVal)}</span></div>`
     : '';
 
-  const safeStr = (s: string) => (s || '').replace(/ /g, '\u00A0');
   const safeName = (sender.name || '').replace(/ /g, '\u00A0');
   const safeCompany = (sender.company || '').replace(/ /g, '\u00A0');
   const safeAddress = (sender.address || '').replace(/ /g, '\u00A0');
   const safeCity = (sender.city || '')
-    .replace(/ /g, '\u00A0')
-    .trim();
+  .split(' ')
+  .map(word => `<span>${word}</span>`)
+  .join('<span style="display:inline-block;width:4px"></span>');
 
   const html = `<!DOCTYPE html>
 <html lang="de">
