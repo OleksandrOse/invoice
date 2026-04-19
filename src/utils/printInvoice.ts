@@ -128,6 +128,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
   .bank-bold{font-weight:700;color:#1a1a2e;font-size:11px;white-space:normal;word-spacing:0.08em;letter-spacing:0.02em;}
   .ftr{background:#1e2d45;padding:14px 45px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
   .ftr-item{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.6);}
+  .ftr-item span{color:rgba(255,255,255,.6)!important;font-size:11px;}
   .ftr-icon{width:22px;height:22px;border:1.5px solid rgba(255,255,255,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 </style>
 </head>
@@ -142,7 +143,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
     <div class="hdr-right">
       <div class="inv-title">Rechnung</div>
       <div class="inv-meta">
-        Rechnungsnummer: ${meta.invoiceNo}<br>
+        ${meta.invoiceNo ? `Rechnungsnummer: ${meta.invoiceNo}<br>` : ''}
         Datum: ${formatDate(meta.date)}<br>
         ${sender.email}
       </div>
@@ -194,15 +195,15 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
   <div class="ftr">
     <div class="ftr-item">
       <div class="ftr-icon">${icons.phone}</div>
-      <span>${sender.phone}</span>
+      <span style="color:rgba(255,255,255,.6);">${sender.phone}</span>
     </div>
     <div class="ftr-item">
       <div class="ftr-icon">${icons.email}</div>
-      <span>${sender.email}</span>
+      <span style="color:rgba(255,255,255,.6);">${sender.email}</span>
     </div>
     <div class="ftr-item">
       <div class="ftr-icon">${icons.address}</div>
-      <span>${sender.address}, ${sender.city}</span>
+      <span style="color:rgba(255,255,255,.6);">${sender.address}, ${sender.city}</span>
     </div>
   </div>
 </div>

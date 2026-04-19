@@ -20,7 +20,7 @@ const InvoiceHeader: React.FC<HeaderProps> = ({ sender, meta }) => (
     <div className="titleArea">
       <div className="title">Rechnung</div>
       <div className="meta">
-        Rechnungsnummer: {meta.invoiceNo}<br />
+        {meta.invoiceNo && <>Rechnungsnummer: {meta.invoiceNo}<br /></>}
         Datum: {formatDate(meta.date)}<br />
         {sender.email}
       </div>
