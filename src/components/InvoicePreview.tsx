@@ -1,14 +1,18 @@
 import React from 'react';
 import { SenderInfo, RecipientInfo, InvoiceMeta, InvoiceFormData, InvoiceTotals } from '../types/invoice';
 import { fmt, formatDate } from '../utils/invoice';
+import { t, Lang } from '../utils/translations';
 import '../styles/InvoicePreview.scss';
 
 interface HeaderProps {
   sender: SenderInfo;
   meta: InvoiceMeta;
+  lang: Lang;
 }
 
-const InvoiceHeader: React.FC<HeaderProps> = ({ sender, meta }) => (
+const InvoiceHeader: React.FC<HeaderProps> = ({ sender, meta, lang }) => {
+  const tr = t[lang];
+  return(
   <div className="header">
     <div className="logoArea">
       <div className="companyName">
@@ -18,31 +22,34 @@ const InvoiceHeader: React.FC<HeaderProps> = ({ sender, meta }) => (
       <div className="companySub">{sender.name}</div>
     </div>
     <div className="titleArea">
-      <div className="title">Rechnung</div>
+      <div className="title">{tr.invoice}</div>
       <div className="meta">
-        {meta.invoiceNo && <>Rechnungsnummer: {meta.invoiceNo}<br /></>}
-        Datum: {formatDate(meta.date)}<br />
+        {meta.invoiceNo && <>{tr.invoiceNo}: {meta.invoiceNo}<br /></>}
+        {tr.date}: {formatDate(meta.date)}<br />
         {sender.email}
       </div>
     </div>
   </div>
-);
+)
+};
 
 interface AddressesProps {
   sender: SenderInfo;
   recipient: RecipientInfo;
+  lang: Lang;
 }
 
-const InvoiceAddresses: React.FC<AddressesProps> = ({ sender, recipient }) => {
+const InvoiceAddresses: React.FC<AddressesProps> = ({ sender, recipient, lang }) => {
   const recipientName =
     recipient.type === 'company'
       ? recipient.company || '—'
       : recipient.name || '—';
 
+  const tr = t[lang];
   return (
     <div className="addresses">
       <div>
-        <div className="addrLabel">Von</div>
+        <div className="addrLabel">{tr.from}</div>
         <div className="addrName">{sender.name || '—'}</div>
         <div className="addrDetail">
           {sender.company && <>{sender.company}<br /></>}
@@ -51,7 +58,7 @@ const InvoiceAddresses: React.FC<AddressesProps> = ({ sender, recipient }) => {
         </div>
       </div>
       <div>
-        <div className="addrLabel">An</div>
+        <div className="addrLabel">{tr.to}</div>
         <div className="addrName">{recipientName}</div>
         <div className="addrDetail">
           {recipient.type === 'person' && recipient.company && (
@@ -69,23 +76,25 @@ interface TableProps {
   form: InvoiceFormData;
   touristTaxTotal: number;
   ubernachtungTotal: number;
+  lang: Lang;
 }
 
-const InvoiceTable: React.FC<TableProps> = ({ form, touristTaxTotal, ubernachtungTotal }) => {
+const InvoiceTable: React.FC<TableProps> = ({ form, touristTaxTotal, ubernachtungTotal, lang }) => {
   const { touristTax, extraItems } = form;
   const hasTax = !!(touristTax.nights && touristTax.persons);
+  const tr = t[lang];
   let pos = 0;
 
   return (
     <table className="table">
       <thead>
         <tr>
-          <th>Pos.</th>
-          <th>Bezeichnung</th>
-          <th>Menge</th>
-          <th>Einheit</th>
-          <th>Einzelpreis</th>
-          <th>Gesamt (€)</th>
+          <th>{tr.pos}</th>
+          <th>{tr.description}</th>
+          <th>{tr.qty}</th>
+          <th>{tr.unit}</th>
+          <th>{tr.unitPrice}</th>
+          <th>{tr.total}</th>
         </tr>
       </thead>
       <tbody>
@@ -93,9 +102,9 @@ const InvoiceTable: React.FC<TableProps> = ({ form, touristTaxTotal, ubernachtun
           <>
             <tr>
               <td className="num">{++pos}</td>
-              <td>Ubernachtung</td>
+              <td>{tr.overnight}</td>
               <td className="num">{touristTax.nights}</td>
-              <td>Nacht</td>
+              <td>{tr.nights}</td>
               <td className="num">
                 {parseFloat(touristTax.price || '0').toFixed(2)}
               </td>
@@ -103,9 +112,9 @@ const InvoiceTable: React.FC<TableProps> = ({ form, touristTaxTotal, ubernachtun
             </tr>
             <tr>
               <td className="num">{++pos}</td>
-              <td>Tourist Tax {touristTax.persons} Persons</td>
+              <td>Tourist Tax {touristTax.persons} {tr.persons}</td>
               <td className="num">{touristTax.nights}</td>
-              <td>Nacht/Pers.</td>
+              <td>{tr.nightsPers}</td>
               <td className="num">
                 {parseFloat(touristTax.pricePerNight || '0').toFixed(2)}
               </td>
@@ -134,7 +143,7 @@ const InvoiceTable: React.FC<TableProps> = ({ form, touristTaxTotal, ubernachtun
         {pos === 0 && (
           <tr>
             <td colSpan={6} className="empty">
-              — keine Positionen —
+              {tr.noItems}
             </td>
           </tr>
         )}
@@ -148,36 +157,41 @@ const InvoiceTable: React.FC<TableProps> = ({ form, touristTaxTotal, ubernachtun
 interface TotalsProps {
   totals: InvoiceTotals;
   discount: string;
+  lang: Lang
 }
 
-const InvoiceTotalsBlock: React.FC<TotalsProps> = ({ totals, discount }) => (
+const InvoiceTotalsBlock: React.FC<TotalsProps> = ({ totals, discount, lang }) => {
+  const tr = t[lang];
+  return(
   <div className="totalsWrap">
     <div className="totalsInner">
       {totals.discountVal > 0 && (
         <>
           <div className="totalRow">
-            <span>Zwischensumme</span>
+            <span>{tr.subtotal}</span>
             <span>{fmt(totals.subtotal)}</span>
           </div>
           <div className={`totalRow discount`}>
-            <span>Rabatt ({discount}%)</span>
+            <span>{tr.discount} ({discount}%)</span>
             <span>−{fmt(totals.discountVal)}</span>
           </div>
         </>
       )}
       <div className={`totalRow final`}>
-        <span>Gesamt</span>
+        <span>{tr.grandTotal}</span>
         <span>{fmt(totals.total)}</span>
       </div>
     </div>
   </div>
-);
+)
+};
 
 interface BankInfoProps {
   sender: SenderInfo;
 }
 
-const InvoiceBankInfo: React.FC<BankInfoProps> = ({ sender }) => (
+const InvoiceBankInfo: React.FC<BankInfoProps> = ({ sender }) => {
+  return(
 
   <div className="bank">
     <strong>{sender.company}</strong><br />
@@ -187,7 +201,8 @@ const InvoiceBankInfo: React.FC<BankInfoProps> = ({ sender }) => (
     BIC: {sender.bic}
   </div>
 
-);
+)
+};
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
 
@@ -221,16 +236,18 @@ interface Props {
   totals: InvoiceTotals;
 }
 
-export const InvoicePreview: React.FC<Props> = ({ form, totals }) => (
+export const InvoicePreview: React.FC<Props> = ({ form, totals }) => {
+  const lang: Lang = (form.meta.language ?? 'de') as Lang;
+  return(
   <div className="invoice">
-    <InvoiceHeader sender={form.sender} meta={form.meta} />
+    <InvoiceHeader sender={form.sender} meta={form.meta}  lang={lang}/>
     <div className="body">
-      <InvoiceAddresses sender={form.sender} recipient={form.recipient} />
+      <InvoiceAddresses sender={form.sender} recipient={form.recipient} lang={lang} />
       <div className="divider" />
-      <InvoiceTable form={form} touristTaxTotal={totals.touristTaxTotal} ubernachtungTotal={totals.ubernachtungTotal} />
-      <InvoiceTotalsBlock totals={totals} discount={form.discount} />
+      <InvoiceTable form={form} touristTaxTotal={totals.touristTaxTotal} ubernachtungTotal={totals.ubernachtungTotal} lang={lang} />
+      <InvoiceTotalsBlock totals={totals} discount={form.discount} lang={lang} />
       <InvoiceBankInfo sender={form.sender} />
     </div>
     <InvoiceFooter sender={form.sender} />
   </div>
-);
+)};

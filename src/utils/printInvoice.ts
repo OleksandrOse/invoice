@@ -1,5 +1,6 @@
 import { InvoiceFormData, InvoiceTotals } from '../types/invoice';
 import { fmt, formatDate } from './invoice';
+import { t } from './translations';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -22,6 +23,7 @@ const icons = {
 
 export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals): Promise<void> => {
   const { sender, recipient, meta, touristTax, extraItems, discount } = form;
+  const tr = t[(meta.language ?? 'de') as 'de' | 'en'];
 
   const origin = window.location.origin;
   let pos = 0;
@@ -44,17 +46,17 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
   const taxRow = hasTax ? `
     <tr>
       <td class="l">${++pos}</td>
-      <td class="l">Ubernachtung</td>
+      <td class="l">${tr.overnight}</td>
       <td class="c">${touristTax.nights}</td>
-      <td class="c">Nacht</td>
+      <td class="c">${tr.nights}</td>
       <td class="r">${parseFloat(touristTax.price || '0').toFixed(2)} €</td>
       <td class="r">${fmt(totals.ubernachtungTotal)}</td>
     </tr>
     <tr>
       <td class="l">${++pos}</td>
-      <td class="l">Tourist Tax (${touristTax.persons} Persons)</td>
+      <td class="l">Tourist Tax (${touristTax.persons} ${tr.persons})</td>
       <td class="c">${touristTax.nights}</td>
-      <td class="c">Nacht/Pers.</td>
+      <td class="c">${tr.nightsPers}</td>
       <td class="r">${parseFloat(touristTax.pricePerNight || '0').toFixed(2)} €</td>
       <td class="r">${fmt(totals.touristTaxTotal)}</td>
     </tr>` : '';
@@ -67,7 +69,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
         <td class="l">${++pos}</td>
         <td>${item.name}</td>
         <td class="c">${item.qty}</td>
-        <td class="c">Stk.</td>
+        <td class="c">${tr.pieces}</td>
         <td class="r">${parseFloat(item.price || '0').toFixed(2)} €</td>
         <td class="r">${fmt(lt)}</td>
       </tr>`;
@@ -75,16 +77,18 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
 
   const hasRows = hasTax || extraItems.some(i => i.name);
   const emptyRow = !hasRows
-    ? `<tr><td colspan="6" class="empty">— keine Positionen —</td></tr>` : '';
+    ? `<tr><td colspan="6" class="empty">${tr.noItems}</td></tr>` : '';
 
   const summaryRows = totals.discountVal > 0
-    ? `<div class="s-line"><span>Zwischensumme:</span><span>${fmt(totals.subtotal)}</span></div>
-       <div class="s-line red"><span>Rabatt (-${discount}%)</span><span>-${fmt(totals.discountVal)}</span></div>`
+    ? `<div class="s-line"><span>${tr.subtotal}:</span><span>${fmt(totals.subtotal)}</span></div>
+       <div class="s-line red"><span>${tr.discount} (-${discount}%)</span><span>-${fmt(totals.discountVal)}</span></div>`
     : '';
+  const splitToSpans = (str: string) =>
+    (str || '').split(' ').map(w => `<span style="display:inline">${w}</span>`).join(' ');
 
   const safeName = (sender.name || '').replace(/ /g, '\u00A0');
   const safeCompany = (sender.company || '').replace(/ /g, '\u00A0');
-  const safeAddress = (sender.address || '').replace(/ /g, '\u00A0');
+    const safeAddress = splitToSpans(sender.address);
   const safeCity = (sender.city || '')
   .split(' ')
   .map(word => `<span>${word}</span>`)
@@ -157,10 +161,10 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
       <div class="logo-sub-name">${sender.name || ''}</div>
     </div>
     <div class="hdr-right">
-      <div class="inv-title">Rechnung</div>
+      <div class="inv-title">${tr.invoice}</div>
       <div class="inv-meta">
-        ${meta.invoiceNo ? `Rechnungsnummer: ${meta.invoiceNo}<br>` : ''}
-        Datum: ${formatDate(meta.date)}<br>
+        ${meta.invoiceNo ? `${tr.invoiceNo}: ${meta.invoiceNo}<br>` : ''}
+        ${tr.date}: ${formatDate(meta.date)}<br>
         ${sender.email}
       </div>
     </div>
@@ -168,7 +172,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
   <div class="body">
     <div class="info-row">
       <div>
-        <div class="info-lbl">Von</div>
+        <div class="info-lbl">${tr.from}</div>
         <div class="info-name">${safeName}</div>
         <div class="info-val">
           ${safeCompany}
@@ -177,7 +181,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
         <div class="info-val">${safeCity}</div> 
       </div>
       <div>
-        <div class="info-lbl">An</div>
+        <div class="info-lbl">${tr.to}</div>
         <div class="info-name">${recipientName}</div>
         <div class="info-val">${recipientExtra}${recipient.address || ''}<br>${recipient.city}</div>
       </div>
@@ -185,12 +189,12 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
     <table>
       <thead>
         <tr>
-          <th class="l">Pos.</th>
-          <th class="l">Bezeichnung</th>
-          <th class="c">Menge</th>
-          <th class="c">Einheit</th>
-          <th class="r">Einzelpreis</th>
-          <th class="r">Gesamt (€)</th>
+          <th class="l">${tr.pos}</th>
+          <th class="l">${tr.description}</th>
+          <th class="c">${tr.qty}</th>
+          <th class="c">${tr.unit}</th>
+          <th class="r">${tr.unitPrice}</th>
+          <th class="r">${tr.total}</th>
         </tr>
       </thead>
       <tbody>${taxRow}${extraRows}${emptyRow}</tbody>
@@ -199,7 +203,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
       <div class="summary-inner">
         ${summaryRows}
         <div class="s-line total">
-          <span>Gesamtsumme:</span>
+          <span>${tr.grandTotal}:</span>
           <span class="currency">${fmt(totals.total)}</span>
         </div>
       </div>

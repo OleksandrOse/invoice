@@ -2,16 +2,20 @@ import React from 'react';
 import { TouristTax } from '../types/invoice';
 import { FormSection } from './FormSection';
 import { fmt } from '../utils/invoice';
+import { t } from '../utils/translations';
 import '../styles/TouristTaxForm.scss';
 
 interface Props {
   touristTax: TouristTax;
   total: number;
   onChange: (patch: Partial<TouristTax>) => void;
+  language: 'de' | 'en';
 }
 
-export const TouristTaxForm: React.FC<Props> = ({ touristTax, total, onChange }) => (
-  <FormSection label="Übernachtungspreis inkl. Kurtaxe">
+export const TouristTaxForm: React.FC<Props> = ({ touristTax, total, onChange, language }) => {
+  const tr = t[language];
+  return(
+  <FormSection label={tr.roomRate}>
      <div className="row">
       <div>
         <label>Price</label>
@@ -20,7 +24,7 @@ export const TouristTaxForm: React.FC<Props> = ({ touristTax, total, onChange })
           value={touristTax.price} onChange={e => onChange({ price: e.target.value })} />
       </div>
         <div>
-        <label>Nacht</label>
+        <label>{tr.nights}</label>
         <input
           type="number"
           min="0"
@@ -42,7 +46,7 @@ export const TouristTaxForm: React.FC<Props> = ({ touristTax, total, onChange })
         />
       </div>
       <div>
-        <label>€ / Nacht / Person</label>
+        <label>€ / {tr.nights} / Person</label>
         <input
           type="number"
           min="0"
@@ -54,8 +58,9 @@ export const TouristTaxForm: React.FC<Props> = ({ touristTax, total, onChange })
     </div>
     {total > 0 && (
       <div className="preview">
-        {touristTax.nights} Nacht × {touristTax.persons} Person × {touristTax.pricePerNight} € = <strong>{fmt(total)}</strong>
+        {touristTax.nights} {tr.nights} × {touristTax.persons} Person × {touristTax.pricePerNight} € = <strong>{fmt(total)}</strong>
       </div>
     )}
   </FormSection>
-);
+)
+};

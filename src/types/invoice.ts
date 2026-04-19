@@ -35,6 +35,7 @@ export interface TouristTax {
 }
 
 export interface InvoiceMeta {
+  language: 'de' | 'en';
   invoiceNo: string;
   date: string;
 }

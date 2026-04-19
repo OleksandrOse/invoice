@@ -1,6 +1,7 @@
 import React from 'react';
 import { LineItem } from '../types/invoice';
 import { FormSection } from './FormSection';
+import { t } from '../utils/translations';
 import  '../styles/ExtraItemsForm.scss';
 
 interface Props {
@@ -8,10 +9,13 @@ interface Props {
   onAdd: () => void;
   onRemove: (id: string) => void;
   onUpdate: (id: string, patch: Partial<Omit<LineItem, 'id'>>) => void;
+  language: 'de' | 'en';
 }
 
-export const ExtraItemsForm: React.FC<Props> = ({ items, onAdd, onRemove, onUpdate }) => (
-  <FormSection label="Zusätzliche Positionen">
+export const ExtraItemsForm: React.FC<Props> = ({ items, onAdd, onRemove, onUpdate, language }) => {
+  const tr = t[language];
+  return(
+  <FormSection label={tr.additional}>
     {items.map(item => (
       <div key={item.id} className="itemRow">
         <div>
@@ -23,7 +27,7 @@ export const ExtraItemsForm: React.FC<Props> = ({ items, onAdd, onRemove, onUpda
           />
         </div>
         <div>
-          <label>Anzahl</label>
+          <label>{tr.number}</label>
           <input
             type="number"
             min="0"
@@ -52,7 +56,7 @@ export const ExtraItemsForm: React.FC<Props> = ({ items, onAdd, onRemove, onUpda
       </div>
     ))}
     <button className="addBtn" onClick={onAdd} type="button">
-      + Position hinzufügen
+      + {tr.add}
     </button>
   </FormSection>
-);
+)};

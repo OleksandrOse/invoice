@@ -8,6 +8,7 @@ import { ExtraItemsForm } from './components/ExtraltemsForm';
 import { DiscountForm } from './components/DiscountForm';
 import { InvoicePreview } from './components/InvoicePreview';
 import { printInvoice } from './utils/printInvoice';
+import { t } from './utils/translations';
 import './styles/App.scss';
 import './styles/global.scss';
 
@@ -20,36 +21,54 @@ const App: React.FC = () => {
   } = useInvoiceForm();
 
   const handlePrint = () => { printInvoice(form, totals); };
+  const language = (form.meta.language ?? 'de') as 'de' | 'en';
+  const tr = t[language];
   return (
     <div className="app">
       <div className="form-panel">
         <div className="panel-title">Kontogenerator</div>
-        <SenderForm sender={form.sender} onChange={setSender} />
+        <SenderForm
+          sender={form.sender}
+          onChange={setSender}
+          language={form.meta.language ?? 'de'}
+          onLanguageChange={(lang) => setMeta({ language: lang })}
+        />
         <RecipientForm
           recipient={form.recipient}
           onChange={setRecipient}
           onTypeChange={setRecipientType}
+          language={form.meta.language ?? 'de'}
         />
-        <InvoiceMetaForm meta={form.meta} onChange={setMeta} />
+        <InvoiceMetaForm
+          meta={form.meta}
+          onChange={setMeta}
+          language={form.meta.language ?? 'de'} 
+        />
         <TouristTaxForm
           touristTax={form.touristTax}
           total={totals.touristTaxTotal}
           onChange={setTouristTax}
+          language={form.meta.language ?? 'de'}
         />
         <ExtraItemsForm
           items={form.extraItems}
           onAdd={addItem}
           onRemove={removeItem}
           onUpdate={updateItem}
+          language={form.meta.language ?? 'de'}
         />
-        <DiscountForm discount={form.discount} onChange={setDiscount} />
+        <DiscountForm
+          discount={form.discount} 
+          onChange={setDiscount} 
+          language={form.meta.language ?? 'de'}
+        />
       </div>
 
       <div className="preview-panel">
         <div className="invoice-wrapper">
           <InvoicePreview form={form} totals={totals} />
           <button className="print-btn" onClick={handlePrint}>
-            PDF drucken / speichern
+            {tr.save}
           </button>
         </div>
       </div>

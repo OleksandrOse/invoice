@@ -1,14 +1,18 @@
 import React from 'react';
+import { t } from '../utils/translations';
 import { FormSection } from './FormSection';
 
 interface Props {
   discount: string;
   onChange: (val: string) => void;
+  language: 'de' | 'en';
 }
 
-export const DiscountForm: React.FC<Props> = ({ discount, onChange }) => (
-  <FormSection label="Rabatt">
-    <label>Rabatt (%)</label>
+export const DiscountForm: React.FC<Props> = ({ discount, onChange, language }) => {
+  const tr = t[language];
+  return(
+  <FormSection label={tr.discount}>
+    <label>{tr.discount} (%)</label>
     <input
       type="number"
       min="0"
@@ -19,4 +23,5 @@ export const DiscountForm: React.FC<Props> = ({ discount, onChange }) => (
       placeholder="0"
     />
   </FormSection>
-);
+)
+};

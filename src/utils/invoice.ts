@@ -59,6 +59,7 @@ export const defaultFormData = (): InvoiceFormData => ({
     city: '',
   },
   meta: {
+    language: 'de',
     invoiceNo: '',
     date: new Date().toISOString().split('T')[0],
   },
