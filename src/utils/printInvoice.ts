@@ -89,6 +89,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
 <html lang="de">
 <head>
 <meta charset="UTF-8"/>
+<meta name="format-detection" content="telephone=no, email=no, address=no"/>
 <style>
   @font-face{font-family:'Brush';src:url('data:font/otf;base64,${brushBase64}') format('opentype');}
   @font-face{font-family:'Gothic';src:url('data:font/ttf;base64,${gothicBase64}') format('truetype');}
@@ -153,8 +154,12 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
     <div class="info-row">
       <div>
         <div class="info-lbl">Von</div>
-        <div class="info-name">${sender.name}</div>
-        <div class="info-val">${sender.company}<br>${sender.address}<br>${sender.city}</div>
+        <div class="info-name">${safeName}</div>
+        <div class="info-val">
+          ${safeCompany}<br>
+          ${sender.address}<br>
+          ${sender.city}
+        </div>
       </div>
       <div>
         <div class="info-lbl">An</div>
