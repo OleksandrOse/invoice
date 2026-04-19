@@ -98,7 +98,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
   @font-face{font-family:'Gothic';src:url('data:font/ttf;base64,${gothicBase64}') format('truetype');}
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap');
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'DM Sans',sans-serif;background:#fff;color:#222;width:794px;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:#fff;color:#222;width:794px;margin:0;padding:0;text-rendering: optimizeLegibility;-webkit-font-smoothing: antialiased;}
   .page{width:794px;height:1123px;display:flex;flex-direction:column;background:#fff;overflow:hidden;position:relative;}
   .hdr{background:#1e2d45;padding:35px 45px;display:flex;justify-content:space-between;align-items:flex-start;flex-shrink:0;}
   .logo{display:flex;flex-direction:column;align-items:flex-start;line-height:1;}
@@ -112,7 +112,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
   .info-row{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:28px;}
   .info-lbl{font-size:10px;font-weight:700;color:#999;margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em;}
   .info-name{font-size:14px;font-weight:700;color:#1a1a2e;white-space:normal;word-spacing:0.08em;letter-spacing:0.01em;}
-  .info-val{font-size:12px;color:#444;line-height:1.75;margin-top:2px;font-family:Arial,Helvetica,sans-serif;letter-spacing:0.02em;}
+  .info-val{font-size:12px;color:#444;line-height:1.75;margin-top:2px;white-space:normal;word-spacing:0.08em;}
   table{width:100%;border-collapse:collapse;}
   thead tr{border-bottom:2px solid #1e2d45;}
   th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#1e2d45;padding:8px 0;text-align:left;}
@@ -134,7 +134,11 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
   .ftr-item{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.6);}
   .ftr-item span{color:rgba(255,255,255,.6)!important;font-size:11px;}
   .ftr-icon{width:22px;height:22px;border:1.5px solid rgba(255,255,255,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-</style>
+  .currency {
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+  }
+  </style>
 </head>
 <body>
 <div class="page" id="page">
@@ -188,7 +192,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
         ${summaryRows}
         <div class="s-line total">
           <span>Gesamtsumme:</span>
-          <span>${fmt(totals.total)}</span>
+          <span class="currency">${fmt(totals.total)}</span>
         </div>
       </div>
     </div>
