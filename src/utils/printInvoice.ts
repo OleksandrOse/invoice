@@ -84,6 +84,8 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
 
   const safeName = (sender.name || '').replace(/ /g, '\u00A0');
   const safeCompany = (sender.company || '').replace(/ /g, '\u00A0');
+  const safeAddress = (sender.address || '').replace(/ /g, '\u00A0');
+  const safeCity = (sender.city || '').replace(/ /g, '\u00A0');
 
   const html = `<!DOCTYPE html>
 <html lang="de">
@@ -156,10 +158,10 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
         <div class="info-lbl">Von</div>
         <div class="info-name">${safeName}</div>
         <div class="info-val">
-          ${safeCompany}<br>
-          ${sender.address}<br>
-          ${sender.city}
+          ${safeCompany}
         </div>
+        <div>${safeAddress}</div>
+        <div>${safeCity}</div> 
       </div>
       <div>
         <div class="info-lbl">An</div>
@@ -208,7 +210,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
     </div>
     <div class="ftr-item">
       <div class="ftr-icon">${icons.address}</div>
-      <span style="color:rgba(255,255,255,.6);">${sender.address}, ${sender.city}</span>
+      <span style="color:rgba(255,255,255,.6);">${safeAddress}, ${safeCity}</span>
     </div>
   </div>
 </div>
