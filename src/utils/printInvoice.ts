@@ -112,7 +112,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
   .info-row{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:28px;}
   .info-lbl{font-size:10px;font-weight:700;color:#999;margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em;}
   .info-name{font-size:14px;font-weight:700;color:#1a1a2e;white-space:normal;word-spacing:0.08em;letter-spacing:0.01em;}
-  .info-val{font-size:12px;color:#444;line-height:1.75;margin-top:2px;white-space:normal;word-spacing:0.08em;}
+  .info-val{font-size:12px;color:#444;line-height:1.75;margin-top:2px;font-family:Arial,Helvetica,sans-serif;letter-spacing:0.02em;}
   table{width:100%;border-collapse:collapse;}
   thead tr{border-bottom:2px solid #1e2d45;}
   th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#1e2d45;padding:8px 0;text-align:left;}
