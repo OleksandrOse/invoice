@@ -112,7 +112,7 @@ const InvoiceTable: React.FC<TableProps> = ({ form, touristTaxTotal, ubernachtun
             </tr>
             <tr>
               <td className="num">{++pos}</td>
-              <td>Tourist Tax {touristTax.persons} {tr.persons}</td>
+              <td>{tr.touristTax} {touristTax.persons} {tr.persons}</td>
               <td className="num">{touristTax.nights}</td>
               <td>{tr.nightsPers}</td>
               <td className="num">

@@ -38,6 +38,7 @@ export const t = {
     recipient: 'Empfänger',
     roomRate: 'Übernachtungspreis inkl. Kurtaxe',
     information: 'Kontodaten',
+    touristTax: 'Kurtaxe',
   },
   en: {
     invoice: 'Invoice',
@@ -78,6 +79,7 @@ export const t = {
     recipient: 'Recipient',
     roomRate: `Room rate, including visitor's tax`,
     information: 'Account information',
+    touristTax: 'Tourist Tax',
   },
 } as const;
 

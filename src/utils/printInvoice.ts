@@ -54,7 +54,7 @@ export const printInvoice = async (form: InvoiceFormData, totals: InvoiceTotals)
     </tr>
     <tr>
       <td class="l">${++pos}</td>
-      <td class="l">Tourist Tax (${touristTax.persons} ${tr.persons})</td>
+      <td class="l">${tr.touristTax} ${touristTax.persons} ${tr.persons}</td>
       <td class="c">${touristTax.nights}</td>
       <td class="c">${tr.nightsPers}</td>
       <td class="r">${parseFloat(touristTax.pricePerNight || '0').toFixed(2)} €</td>
